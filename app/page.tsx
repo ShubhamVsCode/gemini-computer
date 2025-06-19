@@ -265,7 +265,10 @@ export default function GeminiComputerPage() {
   );
 
   useEffect(() => {
-    posthog.capture("Visited");
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      defaults: "2025-05-24",
+    });
   }, []);
   // Use streaming content if available, otherwise use current content
   const displayContent = streamingContent || currentContent;
