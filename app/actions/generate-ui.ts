@@ -139,18 +139,11 @@ function getDesktopContent(): string {
   <!-- Background Pattern -->
   <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
   
-  <!-- Welcome Header -->
-  <div style="text-align: center; padding: 40px 20px 20px; color: white; position: relative; z-index: 1;">
-    <h1 style="font-size: 48px; font-weight: 300; margin: 0 0 10px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">✨ Gemini Computer</h1>
-    <p style="font-size: 18px; opacity: 0.9; margin: 0; font-weight: 300;">Your AI-Powered Operating System</p>
-  </div>
-  
   <!-- Main Content Area -->
   <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 1;">
     
     <!-- App Grid Container -->
     <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
-      <h2 style="text-align: center; margin: 0 0 30px 0; color: #333; font-size: 24px; font-weight: 500;">Choose an Application</h2>
       
       <!-- App Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 25px;">

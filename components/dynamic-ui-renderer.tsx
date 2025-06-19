@@ -56,11 +56,12 @@ export function GeminiComputerRenderer({
   return (
     <div
       ref={containerRef}
-      className="flex-1 flex flex-col overflow-hidden"
+      className="flex-1 flex flex-col overflow-auto"
       style={{
         fontFamily: "system-ui, -apple-system, sans-serif",
         fontSize: "14px",
         lineHeight: "1.5",
+        scrollBehavior: "smooth",
       }}
     />
   );
