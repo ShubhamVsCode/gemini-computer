@@ -134,66 +134,98 @@ Focus on creating intuitive interfaces that feel like a real operating system.In
 }
 
 function getDesktopContent(): string {
-  return `< div style = "flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;" >
-        <h2 style="margin: 0 0 30px 0; color: #202124; font-size: 24px;" > Desktop </h2>
-
-          < !--App Grid-- >
-            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 30px; max-width: 500px;" >
-
-              <!--Top Row-- >
-                <div data - interaction - id="open_desktop" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                  <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >🖥️</div>
-                    < div style = "font-size: 12px; color: #5f6368;" > Desktop </div>
-                      </div>
-
-                      < div data - interaction - id="open_documents" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                        <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >📁</div>
-                          < div style = "font-size: 12px; color: #5f6368;" > Documents </div>
-                            </div>
-
-                            < div data - interaction - id="open_notepad" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                              <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >📝</div>
-                                < div style = "font-size: 12px; color: #5f6368;" > Notepad </div>
-                                  </div>
-
-                                  < div data - interaction - id="open_settings" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                    <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >⚙️</div>
-                                      < div style = "font-size: 12px; color: #5f6368;" > Settings </div>
-                                        </div>
-
-                                        < div data - interaction - id="open_trash" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                          <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >🗑️</div>
-                                            < div style = "font-size: 12px; color: #5f6368;" > Trash </div>
-                                              </div>
-
-                                              < !--Bottom Row-- >
-                                                <div data - interaction - id="open_web" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                                  <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >🌐</div>
-                                                    < div style = "font-size: 12px; color: #5f6368;" > Web </div>
-                                                      </div>
-
-                                                      < div data - interaction - id="open_calculator" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                                        <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >🔢</div>
-                                                          < div style = "font-size: 12px; color: #5f6368;" > Calculator </div>
-                                                            </div>
-
-                                                            < div data - interaction - id="open_travel" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                                              <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >✈️</div>
-                                                                < div style = "font-size: 12px; color: #5f6368;" > Travel </div>
-                                                                  </div>
-
-                                                                  < div data - interaction - id="open_shopping" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                                                    <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >🛒</div>
-                                                                      < div style = "font-size: 12px; color: #5f6368;" > Shopping </div>
-                                                                        </div>
-
-                                                                        < div data - interaction - id="open_games" style = "cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover = "this.style.backgroundColor='#f8f9fa'" onmouseout = "this.style.backgroundColor='transparent'" >
-                                                                          <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" >🎮</div>
-                                                                            < div style = "font-size: 12px; color: #5f6368;" > Games </div>
-                                                                              </div>
-
-                                                                              </div>
-                                                                              </div>`;
+  return `<div style="flex: 1; display: flex; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
+  
+  <!-- Background Pattern -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
+  
+  <!-- Welcome Header -->
+  <div style="text-align: center; padding: 40px 20px 20px; color: white; position: relative; z-index: 1;">
+    <h1 style="font-size: 48px; font-weight: 300; margin: 0 0 10px 0; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">✨ Gemini Computer</h1>
+    <p style="font-size: 18px; opacity: 0.9; margin: 0; font-weight: 300;">Your AI-Powered Operating System</p>
+  </div>
+  
+  <!-- Main Content Area -->
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 1;">
+    
+    <!-- App Grid Container -->
+    <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
+      <h2 style="text-align: center; margin: 0 0 30px 0; color: #333; font-size: 24px; font-weight: 500;">Choose an Application</h2>
+      
+      <!-- App Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 25px;">
+        
+        <!-- Desktop -->
+        <div data-interaction-id="open_desktop" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🖥️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Desktop</div>
+        </div>
+        
+        <!-- Documents -->
+        <div data-interaction-id="open_documents" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #ffecd2, #fcb69f); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(252, 182, 159, 0.3);">📁</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Documents</div>
+        </div>
+        
+        <!-- Notepad -->
+        <div data-interaction-id="open_notepad" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);">📝</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Notepad</div>
+        </div>
+        
+        <!-- Settings -->
+        <div data-interaction-id="open_settings" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #d299c2, #fef9d7); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(210, 153, 194, 0.3);">⚙️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Settings</div>
+        </div>
+        
+        <!-- Web -->
+        <div data-interaction-id="open_web" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #89f7fe, #66a6ff); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(137, 247, 254, 0.3);">🌐</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Web</div>
+        </div>
+        
+        <!-- Calculator -->
+        <div data-interaction-id="open_calculator" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #fa709a, #fee140); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);">🔢</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Calculator</div>
+        </div>
+        
+        <!-- Travel -->
+        <div data-interaction-id="open_travel" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a1c4fd, #c2e9fb); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(161, 196, 253, 0.3);">✈️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Travel</div>
+        </div>
+        
+        <!-- Shopping -->
+        <div data-interaction-id="open_shopping" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #ff9a9e, #fecfef); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);">🛒</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Shopping</div>
+        </div>
+        
+        <!-- Games -->
+        <div data-interaction-id="open_games" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🎮</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Games</div>
+        </div>
+        
+        <!-- Trash -->
+        <div data-interaction-id="open_trash" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #868f96, #596164); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(134, 143, 150, 0.3);">🗑️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Trash</div>
+        </div>
+        
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Footer -->
+  <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.8); font-size: 14px; position: relative; z-index: 1;">
+    <p style="margin: 0;">Powered by AI • Every interaction creates something unique</p>
+  </div>
+  
+</div>`;
 }
 
 // Keep the old function for backward compatibility

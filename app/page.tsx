@@ -3,73 +3,97 @@
 import { useState, useCallback } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
 
-// Initial desktop content (just the inner content, not full HTML)
-const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-  <h2 style="margin: 0 0 30px 0; color: #202124; font-size: 24px;">Desktop</h2>
+// Initial desktop content - Beautiful and modern design
+const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; display: flex; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
   
-  <!-- App Grid -->
-  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 30px; max-width: 500px;">
+  <!-- Background Pattern -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
+  
+  <!-- Main Content Area -->
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 1;">
     
-    <!-- Top Row -->
-    <div data-interaction-id="open_desktop" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🖥️</div>
-      <div style="font-size: 12px; color: #5f6368;">Desktop</div>
-    </div>
-    
-    <div data-interaction-id="open_documents" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">📁</div>
-      <div style="font-size: 12px; color: #5f6368;">Documents</div>
-    </div>
-    
-    <div data-interaction-id="open_notepad" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">📝</div>
-      <div style="font-size: 12px; color: #5f6368;">Notepad</div>
-    </div>
-    
-    <div data-interaction-id="open_settings" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">⚙️</div>
-      <div style="font-size: 12px; color: #5f6368;">Settings</div>
-    </div>
-    
-    <div data-interaction-id="open_trash" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🗑️</div>
-      <div style="font-size: 12px; color: #5f6368;">Trash</div>
-    </div>
-    
-    <!-- Bottom Row -->
-    <div data-interaction-id="open_web" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🌐</div>
-      <div style="font-size: 12px; color: #5f6368;">Web</div>
-    </div>
-    
-    <div data-interaction-id="open_calculator" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🔢</div>
-      <div style="font-size: 12px; color: #5f6368;">Calculator</div>
-    </div>
-    
-    <div data-interaction-id="open_travel" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">✈️</div>
-      <div style="font-size: 12px; color: #5f6368;">Travel</div>
-    </div>
-    
-    <div data-interaction-id="open_shopping" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🛒</div>
-      <div style="font-size: 12px; color: #5f6368;">Shopping</div>
-    </div>
-    
-    <div data-interaction-id="open_games" style="cursor: pointer; text-align: center; padding: 15px; border-radius: 8px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-      <div style="width: 48px; height: 48px; background-color: #1a73e8; border-radius: 8px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">🎮</div>
-      <div style="font-size: 12px; color: #5f6368;">Games</div>
+    <!-- App Grid Container -->
+    <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
+      <!-- App Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 25px;">
+        
+        <!-- Desktop -->
+        <div data-interaction-id="open_desktop" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🖥️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Desktop</div>
+        </div>
+        
+        <!-- Documents -->
+        <div data-interaction-id="open_documents" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #ffecd2, #fcb69f); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(252, 182, 159, 0.3);">📁</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Documents</div>
+        </div>
+        
+        <!-- Notepad -->
+        <div data-interaction-id="open_notepad" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);">📝</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Notepad</div>
+        </div>
+        
+        <!-- Settings -->
+        <div data-interaction-id="open_settings" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #d299c2, #fef9d7); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(210, 153, 194, 0.3);">⚙️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Settings</div>
+        </div>
+        
+        <!-- Web -->
+        <div data-interaction-id="open_web" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #89f7fe, #66a6ff); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(137, 247, 254, 0.3);">🌐</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Web</div>
+        </div>
+        
+        <!-- Calculator -->
+        <div data-interaction-id="open_calculator" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #fa709a, #fee140); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);">🔢</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Calculator</div>
+        </div>
+        
+        <!-- Travel -->
+        <div data-interaction-id="open_travel" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a1c4fd, #c2e9fb); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(161, 196, 253, 0.3);">✈️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Travel</div>
+        </div>
+        
+        <!-- Shopping -->
+        <div data-interaction-id="open_shopping" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #ff9a9e, #fecfef); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);">🛒</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Shopping</div>
+        </div>
+        
+        <!-- Games -->
+        <div data-interaction-id="open_games" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🎮</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Games</div>
+        </div>
+        
+        <!-- Trash -->
+        <div data-interaction-id="open_trash" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #868f96, #596164); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(134, 143, 150, 0.3);">🗑️</div>
+          <div style="font-size: 13px; color: #495057; font-weight: 500;">Trash</div>
+        </div>
+        
+      </div>
     </div>
     
   </div>
+  
+  <!-- Footer -->
+  <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.8); font-size: 14px; position: relative; z-index: 1;">
+    <p style="margin: 0;">Powered by AI • Every interaction creates something unique</p>
+  </div>
+  
 </div>`;
 
 export default function GeminiComputerPage() {
   const [currentContent, setCurrentContent] = useState(INITIAL_DESKTOP_CONTENT);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
-  const [useTestMode, setUseTestMode] = useState(false);
+
   const [windowTitle, setWindowTitle] = useState("Gemini Computer");
 
   // Function to parse AI SDK data stream chunks
@@ -119,12 +143,7 @@ export default function GeminiComputerPage() {
     async (interactionId: string) => {
       if (isStreaming) return;
 
-      console.log(
-        "🚀 Starting interaction:",
-        interactionId,
-        "Test mode:",
-        useTestMode
-      );
+      console.log("🚀 Starting interaction:", interactionId);
       setIsStreaming(true);
       setStreamingContent(""); // Reset streaming content
 
@@ -153,117 +172,85 @@ export default function GeminiComputerPage() {
       }
 
       try {
-        if (useTestMode) {
-          // Use non-streaming test API
-          console.log("🧪 Using test mode (non-streaming)");
-          const response = await fetch("/api/test-generate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              currentContent,
-              interactionId,
-              timestamp: Date.now(),
-            }),
-          });
+        // Use streaming API
+        console.log("📡 Making fetch request...");
+        const response = await fetch("/api/generate-screen", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            currentContent,
+            interactionId,
+            timestamp: Date.now(),
+          }),
+        });
 
-          console.log("📡 Test response status:", response.status);
-          const result = await response.json();
-          console.log("📄 Test result:", {
-            success: result.success,
-            contentLength: result.content?.length,
-          });
+        console.log(
+          "📡 Response status:",
+          response.status,
+          response.statusText
+        );
 
-          if (result.success && result.content) {
-            const cleanedContent = cleanupContent(result.content);
-            setCurrentContent(cleanedContent);
-            console.log("✅ Set content from test mode");
-          } else {
-            console.error("❌ Test mode failed:", result);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to generate screen: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error("No reader available");
+        }
+
+        console.log("📖 Starting to read stream...");
+        let accumulatedContent = "";
+        let chunkCount = 0;
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            console.log("✅ Stream finished. Total chunks:", chunkCount);
+            break;
           }
-        } else {
-          // Use streaming API (original code)
-          console.log("📡 Making fetch request...");
-          const response = await fetch("/api/generate-screen", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              currentContent,
-              interactionId,
-              timestamp: Date.now(),
-            }),
-          });
 
+          chunkCount++;
+          const chunk = decoder.decode(value, { stream: true });
           console.log(
-            "📡 Response status:",
-            response.status,
-            response.statusText
+            `📦 Chunk ${chunkCount}:`,
+            chunk.substring(0, 100) + "..."
           );
 
-          if (!response.ok) {
-            throw new Error(
-              `Failed to generate screen: ${response.status} ${response.statusText}`
-            );
-          }
+          const contentChunk = parseDataStreamChunk(chunk);
+          console.log(
+            `🔧 Parsed content chunk (${contentChunk.length} chars):`,
+            contentChunk.substring(0, 50) + "..."
+          );
 
-          const reader = response.body?.getReader();
-          if (!reader) {
-            throw new Error("No reader available");
-          }
-
-          console.log("📖 Starting to read stream...");
-          let accumulatedContent = "";
-          let chunkCount = 0;
-          const decoder = new TextDecoder();
-
-          while (true) {
-            const { done, value } = await reader.read();
-
-            if (done) {
-              console.log("✅ Stream finished. Total chunks:", chunkCount);
-              break;
-            }
-
-            chunkCount++;
-            const chunk = decoder.decode(value, { stream: true });
+          if (contentChunk) {
+            accumulatedContent += contentChunk;
             console.log(
-              `📦 Chunk ${chunkCount}:`,
-              chunk.substring(0, 100) + "..."
+              "📝 Accumulated content length:",
+              accumulatedContent.length
             );
-
-            const contentChunk = parseDataStreamChunk(chunk);
-            console.log(
-              `🔧 Parsed content chunk (${contentChunk.length} chars):`,
-              contentChunk.substring(0, 50) + "..."
-            );
-
-            if (contentChunk) {
-              accumulatedContent += contentChunk;
-              console.log(
-                "📝 Accumulated content length:",
-                accumulatedContent.length
-              );
-              // Clean up and set streaming content
-              const cleanedStreamingContent =
-                cleanupContent(accumulatedContent);
-              setStreamingContent(cleanedStreamingContent);
-            }
+            // Clean up and set streaming content
+            const cleanedStreamingContent = cleanupContent(accumulatedContent);
+            setStreamingContent(cleanedStreamingContent);
           }
-
-          console.log("💾 Final content length:", accumulatedContent.length);
-          // Set the final content once streaming is complete
-          if (accumulatedContent.trim()) {
-            const cleanedFinalContent = cleanupContent(accumulatedContent);
-            setCurrentContent(cleanedFinalContent);
-            console.log("✅ Set final content");
-          } else {
-            console.warn("⚠️ No content received");
-          }
-          setStreamingContent("");
         }
+
+        console.log("💾 Final content length:", accumulatedContent.length);
+        // Set the final content once streaming is complete
+        if (accumulatedContent.trim()) {
+          const cleanedFinalContent = cleanupContent(accumulatedContent);
+          setCurrentContent(cleanedFinalContent);
+          console.log("✅ Set final content");
+        } else {
+          console.warn("⚠️ No content received");
+        }
+        setStreamingContent("");
       } catch (error) {
         console.error("❌ Error handling interaction:", error);
         // Fallback to current content if error occurs
@@ -273,7 +260,7 @@ export default function GeminiComputerPage() {
         setIsStreaming(false);
       }
     },
-    [currentContent, isStreaming, useTestMode]
+    [currentContent, isStreaming]
   );
 
   // Use streaming content if available, otherwise use current content
@@ -281,22 +268,10 @@ export default function GeminiComputerPage() {
 
   return (
     <div className="w-full h-screen overflow-hidden bg-[#f0f2f5] flex items-center justify-center">
-      {/* Debug toggle */}
-      <div className="fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setUseTestMode(!useTestMode)}
-          className={`px-3 py-1 rounded text-sm ${
-            useTestMode ? "bg-green-600 text-white" : "bg-gray-600 text-white"
-          }`}
-        >
-          {useTestMode ? "🧪 Test Mode" : "🌊 Stream Mode"}
-        </button>
-      </div>
-
       {isStreaming && (
         <div className="fixed top-4 right-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm shadow-lg flex items-center gap-2">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          {useTestMode ? "Testing generation..." : "Generating interface..."}
+          Generating interface...
         </div>
       )}
 

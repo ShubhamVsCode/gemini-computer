@@ -1,7 +1,18 @@
 {
-  "name": "my-v0-project",
-  "version": "0.1.0",
+  "name": "dynamic-ui-generator",
+  "version": "1.0.0",
   "private": true,
+  "description": "A dynamic UI generator powered by AI that creates responsive components and screens",
+  "author": "Your Name",
+  "keywords": [
+    "ui",
+    "generator",
+    "ai",
+    "dynamic",
+    "components",
+    "nextjs",
+    "react"
+  ],
   "scripts": {
     "build": "next build",
     "dev": "next dev",
