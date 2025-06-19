@@ -1,6 +1,7 @@
 "use client";
+import posthog from "posthog-js";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
 
 // Initial desktop content - Beautiful and modern design
@@ -263,6 +264,9 @@ export default function GeminiComputerPage() {
     [currentContent, isStreaming]
   );
 
+  useEffect(() => {
+    posthog.capture("Visited");
+  }, []);
   // Use streaming content if available, otherwise use current content
   const displayContent = streamingContent || currentContent;
 
