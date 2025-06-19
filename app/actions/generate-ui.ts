@@ -128,7 +128,7 @@ Focus on creating intuitive interfaces that feel like a real operating system.In
     return response;
   } catch (error) {
     console.error("❌ Error generating next screen:", error);
-    console.error("❌ Error details:", error?.message, error?.stack);
+    console.error("❌ Error details:", error instanceof Error ? error.message : 'Unknown error', error instanceof Error ? error.stack : undefined);
 
     // Return fallback response in case of error
     const fallbackContent = getDesktopContent();

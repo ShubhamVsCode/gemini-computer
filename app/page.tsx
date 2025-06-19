@@ -3,6 +3,7 @@ import posthog from "posthog-js";
 
 import { useState, useCallback, useEffect } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
+import { ANALYTICS_EVENTS, EVENT_PROPERTIES } from "@/lib/analytics-constants";
 
 // Initial desktop content - Beautiful and modern design
 const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; display: flex; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
@@ -148,6 +149,12 @@ export default function GeminiComputerPage() {
       setIsStreaming(true);
       setStreamingContent(""); // Reset streaming content
 
+      // Track interaction start with PostHog
+      posthog.capture(ANALYTICS_EVENTS.UI_INTERACTION_STARTED, {
+        [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
+        [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+      });
+
       // Update window title based on interaction
       if (
         interactionId.includes("_desktop") ||
@@ -248,12 +255,35 @@ export default function GeminiComputerPage() {
           const cleanedFinalContent = cleanupContent(accumulatedContent);
           setCurrentContent(cleanedFinalContent);
           console.log("✅ Set final content");
+
+          // Track successful generation completion
+          posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_SUCCESS, {
+            [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
+            [EVENT_PROPERTIES.CONTENT_LENGTH]: accumulatedContent.length,
+            [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+          });
         } else {
           console.warn("⚠️ No content received");
+
+          // Track empty content as a warning
+          posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_WARNING, {
+            [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
+            [EVENT_PROPERTIES.ISSUE]: "empty_content",
+            [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+          });
         }
         setStreamingContent("");
       } catch (error) {
         console.error("❌ Error handling interaction:", error);
+
+        // Track error with PostHog
+        posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_ERROR, {
+          [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
+          [EVENT_PROPERTIES.ERROR]:
+            error instanceof Error ? error.message : "Unknown error",
+          [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+        });
+
         // Fallback to current content if error occurs
         setStreamingContent("");
       } finally {
