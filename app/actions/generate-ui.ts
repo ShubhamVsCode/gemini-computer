@@ -2,6 +2,7 @@
 
 import { streamText } from "ai"
 import { google } from "@ai-sdk/google"
+import { AISDKExporter } from "langsmith/vercel"
 
 interface InteractionContext {
   currentContent: string
@@ -111,6 +112,14 @@ User interaction: ${context.interactionId}
 Generate the content HTML for the next screen.Remember to be non - deterministic - if this is a repeated action, create fresh, different content while maintaining the core functionality.
 
 Focus on creating intuitive interfaces that feel like a real operating system.Include proper data - interaction - id attributes for all clickable elements.`,
+      experimental_telemetry: AISDKExporter.getSettings({
+        runName: `generate-ui-${context.interactionId}`,
+        metadata: {
+          interactionId: context.interactionId,
+          timestamp: context.timestamp,
+          contentLength: context.currentContent?.length || 0
+        }
+      }),
     });
 
     console.log('✅ streamText result created, calling toDataStreamResponse...');
@@ -243,6 +252,15 @@ User interaction: ${context.interactionId}
     Timestamp: ${new Date(context.timestamp).toISOString()}
 
 Generate the content HTML for the next screen.Remember to be non - deterministic - if this is a repeated action, create fresh, different content while maintaining the core functionality.`,
+      experimental_telemetry: AISDKExporter.getSettings({
+        runName: `generate-ui-legacy-${context.interactionId}`,
+        metadata: {
+          interactionId: context.interactionId,
+          timestamp: context.timestamp,
+          contentLength: context.currentContent?.length || 0,
+          function: "generateNextScreen"
+        }
+      }),
     });
 
     // Convert to text for backward compatibility

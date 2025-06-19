@@ -14,20 +14,23 @@ A functional, interactive web-based prototype of a conceptual operating system w
 
 1. **Install Dependencies**
    ```bash
-   npm install
+   pnpm install
    ```
 
-2. **Set up Google AI API Key**
-   - Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. **Set up Environment Variables**
+   - Get your Google AI API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Get your LangSmith API key from [LangSmith](https://smith.langchain.com/)
    - Create a `.env.local` file in the project root
-   - Add your API key:
+   - Add your API keys:
      ```
-     GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
+     GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key_here
+     LANGSMITH_TRACING=true
+     LANGSMITH_API_KEY=your_langsmith_api_key_here
      ```
 
 3. **Run the Development Server**
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 4. **Open the Application**
@@ -56,6 +59,21 @@ A functional, interactive web-based prototype of a conceptual operating system w
 - **Interaction System**: data-interaction-id attributes for click handling
 - **Streaming**: Progressive HTML rendering for immediate feedback
 - **Design System**: Clean, minimalist interface with consistent styling
+- **Observability**: LangSmith tracing for AI operations monitoring and debugging
+
+## LangSmith Tracing
+
+This project includes LangSmith tracing to monitor and debug AI operations:
+
+- **Automatic Tracing**: All AI SDK calls are automatically traced
+- **Run Metadata**: Each trace includes interaction ID, timestamp, and content length
+- **Debugging**: View AI model inputs, outputs, and performance metrics
+- **Custom Run Names**: Traces are named based on the interaction type for easy identification
+
+To view traces:
+1. Set up your LangSmith API key in `.env.local`
+2. Run the application and interact with the UI
+3. Visit your [LangSmith dashboard](https://smith.langchain.com/) to view traces
 
 ## Non-Deterministic Examples
 

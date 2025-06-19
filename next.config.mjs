@@ -12,6 +12,9 @@ const nextConfig = {
   compiler: {
     removeConsole: true,
   },
+  experimental: {
+    instrumentationHook: true,
+  },
 };
 
 export default nextConfig;
