@@ -3,7 +3,13 @@ import posthog from "posthog-js";
 
 import { useState, useCallback, useEffect } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
-import { ANALYTICS_EVENTS, EVENT_PROPERTIES } from "@/lib/analytics-constants";
+import { RateLimitBanner } from "@/components/rate-limit-banner";
+import {
+  ANALYTICS_EVENTS,
+  EVENT_PROPERTIES,
+  WARNING_ISSUES,
+  isRateLimitError,
+} from "@/lib/analytics-constants";
 
 // Initial desktop content - Beautiful and modern design
 const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; display: flex; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
@@ -95,6 +101,7 @@ export default function GeminiComputerPage() {
   const [currentContent, setCurrentContent] = useState(INITIAL_DESKTOP_CONTENT);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
+  const [showRateLimitBanner, setShowRateLimitBanner] = useState(false);
 
   const [windowTitle, setWindowTitle] = useState("Gemini Computer");
 
@@ -140,6 +147,11 @@ export default function GeminiComputerPage() {
 
     return cleaned;
   };
+
+  // Rate limit banner handlers
+  const handleCloseBanner = useCallback(() => {
+    setShowRateLimitBanner(false);
+  }, []);
 
   const handleInteraction = useCallback(
     async (interactionId: string) => {
@@ -265,24 +277,39 @@ export default function GeminiComputerPage() {
         } else {
           console.warn("⚠️ No content received");
 
-          // Track empty content as a warning
+          // Track empty content as a warning (might be due to rate limiting)
           posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_WARNING, {
             [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
-            [EVENT_PROPERTIES.ISSUE]: "empty_content",
+            [EVENT_PROPERTIES.ISSUE]: WARNING_ISSUES.EMPTY_CONTENT,
             [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
           });
+
+          // Show rate limit banner for empty content warnings
+          setShowRateLimitBanner(true);
         }
         setStreamingContent("");
       } catch (error) {
         console.error("❌ Error handling interaction:", error);
 
+        // Check if this is a rate limit error
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        const isRateLimit = isRateLimitError(errorMessage);
+
         // Track error with PostHog
         posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_ERROR, {
           [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
-          [EVENT_PROPERTIES.ERROR]:
-            error instanceof Error ? error.message : "Unknown error",
+          [EVENT_PROPERTIES.ERROR]: errorMessage,
           [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+          [EVENT_PROPERTIES.ISSUE]: isRateLimit
+            ? WARNING_ISSUES.RATE_LIMITED
+            : WARNING_ISSUES.API_ERROR,
         });
+
+        // Show rate limit banner if applicable
+        if (isRateLimit) {
+          setShowRateLimitBanner(true);
+        }
 
         // Fallback to current content if error occurs
         setStreamingContent("");
@@ -293,6 +320,14 @@ export default function GeminiComputerPage() {
     },
     [currentContent, isStreaming]
   );
+
+  const handleTestSystem = useCallback(async () => {
+    // Close the banner and try a simple interaction
+    setShowRateLimitBanner(false);
+
+    // Test with the desktop interaction
+    await handleInteraction("open_desktop");
+  }, [handleInteraction]);
 
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
@@ -305,6 +340,12 @@ export default function GeminiComputerPage() {
 
   return (
     <div className="w-full h-screen overflow-hidden bg-[#f0f2f5] flex items-center justify-center">
+      <RateLimitBanner
+        isVisible={showRateLimitBanner}
+        onClose={handleCloseBanner}
+        onTest={handleTestSystem}
+      />
+
       {isStreaming && (
         <div className="fixed top-4 right-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm shadow-lg flex items-center gap-2">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>

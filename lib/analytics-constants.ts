@@ -26,4 +26,30 @@ export const EVENT_PROPERTIES = {
     ISSUE: "issue",
     APP_NAME: "appName",
     SUCCESS: "success",
-} as const; 
+} as const;
+
+// Issue types for warnings
+export const WARNING_ISSUES = {
+    EMPTY_CONTENT: "empty_content",
+    RATE_LIMITED: "rate_limited",
+    API_ERROR: "api_error",
+    TIMEOUT: "timeout",
+} as const;
+
+// Helper function to detect rate limiting
+export function isRateLimitError(error: string | Error): boolean {
+    const errorMessage = typeof error === 'string' ? error : error.message;
+    const rateLimitIndicators = [
+        'rate limit',
+        'rate_limit',
+        'quota exceeded',
+        'too many requests',
+        '429',
+        'resource exhausted',
+        'quota_exceeded'
+    ];
+
+    return rateLimitIndicators.some(indicator =>
+        errorMessage.toLowerCase().includes(indicator.toLowerCase())
+    );
+} 
