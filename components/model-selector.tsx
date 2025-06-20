@@ -26,8 +26,8 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     isDefault: true,
   },
   {
-    id: "gemini-2.0-flash-experimental",
-    name: "Gemini 2.0 Flash",
+    id: "gemini-2.0-flash-lite",
+    name: "Gemini 2.0 Flash Lite",
     description: "Ultra-fast responses with enhanced creativity",
     icon: <Zap className="w-4 h-4" />,
   },
