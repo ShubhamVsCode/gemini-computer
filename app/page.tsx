@@ -115,7 +115,7 @@ export default function GeminiComputerPage() {
         return savedModel;
       }
     }
-    return AVAILABLE_MODELS[0].id;
+    return AVAILABLE_MODELS[1].id;
   });
 
   const [windowTitle, setWindowTitle] = useState("Gemini Computer");
