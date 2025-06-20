@@ -355,16 +355,6 @@ export default function GeminiComputerPage() {
     [usageCount]
   );
 
-  const handleTestSystem = useCallback(async () => {
-    // Close the banner and try a simple interaction
-    setShowRateLimitBanner(false);
-    // Reset the session state so banner can show again if needed
-    setRateLimitBannerShown(false);
-
-    // Test with the desktop interaction
-    await handleInteraction("open_desktop");
-  }, [handleInteraction]);
-
   const handleUsageLimitModalClose = useCallback(() => {
     // Track modal dismissal
     posthog.capture(ANALYTICS_EVENTS.USAGE_LIMIT_MODAL_DISMISSED, {
@@ -727,7 +717,6 @@ export default function GeminiComputerPage() {
       <RateLimitBanner
         isVisible={showRateLimitBanner}
         onClose={handleCloseBanner}
-        onTest={handleTestSystem}
         onChangeModel={handleChangeModel}
       />
 
