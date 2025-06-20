@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { X, AlertTriangle, TestTube } from "lucide-react";
+import { X, AlertTriangle, TestTube, Settings } from "lucide-react";
 
 interface RateLimitBannerProps {
   isVisible: boolean;
   onClose: () => void;
   onTest?: () => void;
+  onChangeModel?: () => void;
 }
 
 export function RateLimitBanner({
   isVisible,
   onClose,
   onTest,
+  onChangeModel,
 }: RateLimitBannerProps) {
   if (!isVisible) return null;
 
@@ -37,19 +39,19 @@ export function RateLimitBanner({
                   </h3>
                   <p className="text-sm text-gray-700 mb-3">
                     We're currently experiencing rate limiting from Google
-                    Gemini API. Our team is working to resolve this issue. You
-                    can still test the system or try again in a few moments.
+                    Gemini API. Try switching to a different model or test the
+                    system to see if the issue persists.
                   </p>
 
                   {/* Action buttons */}
                   <div className="flex items-center gap-2">
-                    {onTest && (
+                    {onChangeModel && (
                       <button
-                        onClick={onTest}
+                        onClick={onChangeModel}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors"
                       >
-                        <TestTube className="w-3 h-3" />
-                        Test System
+                        <Settings className="w-3 h-3" />
+                        Change Model
                       </button>
                     )}
                     <button

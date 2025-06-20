@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Cpu, Zap, FlaskConical } from "lucide-react";
 
 export interface ModelOption {
@@ -15,6 +15,8 @@ interface ModelSelectorProps {
   selectedModel: string;
   onModelChange: (modelId: string) => void;
   disabled?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
@@ -23,13 +25,13 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     name: "Gemini 2.5 Flash-Lite Preview",
     description: "Latest experimental model with cutting-edge features",
     icon: <FlaskConical className="w-4 h-4" />,
+    isDefault: true,
   },
   {
     id: "gemini-2.0-flash-lite",
     name: "Gemini 2.0 Flash Lite",
     description: "Ultra-fast responses with enhanced creativity",
     icon: <Zap className="w-4 h-4" />,
-    isDefault: true,
   },
   {
     id: "gemini-1.5-flash",
@@ -43,22 +45,52 @@ export function ModelSelector({
   selectedModel,
   onModelChange,
   disabled = false,
+  isOpen: externalIsOpen,
+  onOpenChange,
 }: ModelSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+
+  // Use external isOpen if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   const selectedModelData =
     AVAILABLE_MODELS.find((m) => m.id === selectedModel) || AVAILABLE_MODELS[0];
 
+  const handleToggle = () => {
+    if (disabled) return;
+
+    const newOpenState = !isOpen;
+
+    if (onOpenChange) {
+      onOpenChange(newOpenState);
+    } else {
+      setInternalIsOpen(newOpenState);
+    }
+  };
+
   const handleModelSelect = (modelId: string) => {
     onModelChange(modelId);
-    setIsOpen(false);
+
+    if (onOpenChange) {
+      onOpenChange(false);
+    } else {
+      setInternalIsOpen(false);
+    }
+  };
+
+  const handleBackdropClick = () => {
+    if (onOpenChange) {
+      onOpenChange(false);
+    } else {
+      setInternalIsOpen(false);
+    }
   };
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onClick={handleToggle}
         disabled={disabled}
         className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white/90 hover:text-white bg-white/10 hover:bg-white/20 rounded transition-colors ${
           disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
@@ -78,10 +110,7 @@ export function ModelSelector({
       {isOpen && !disabled && (
         <>
           {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-10" onClick={handleBackdropClick} />
 
           {/* Dropdown */}
           <div className="absolute top-full right-0 mt-2 w-72 bg-white border border-gray-300 rounded-md shadow-lg z-20">

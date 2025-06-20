@@ -6,6 +6,7 @@ import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
 import { RateLimitBanner } from "@/components/rate-limit-banner";
 import { FeedbackModal, FeedbackData } from "@/components/feedback-modal";
 import { ModelSelector, AVAILABLE_MODELS } from "@/components/model-selector";
+import { DebugPanel } from "@/components/debug-panel";
 import {
   ANALYTICS_EVENTS,
   EVENT_PROPERTIES,
@@ -115,10 +116,13 @@ export default function GeminiComputerPage() {
         return savedModel;
       }
     }
-    return AVAILABLE_MODELS[1].id;
+    return (
+      AVAILABLE_MODELS.find((m) => m.isDefault)?.id || AVAILABLE_MODELS[0].id
+    );
   });
 
   const [windowTitle, setWindowTitle] = useState("Gemini Computer");
+  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
 
   // Function to parse AI SDK data stream chunks
   const parseDataStreamChunk = (chunk: string): string => {
@@ -487,6 +491,38 @@ export default function GeminiComputerPage() {
     await handleInteraction("open_desktop");
   }, [handleInteraction]);
 
+  const handleChangeModel = useCallback(() => {
+    // Close the rate limit banner and open the model selector
+    setShowRateLimitBanner(false);
+    setModelSelectorOpen(true);
+  }, []);
+
+  // Debug panel handlers
+  const handleToggleRateLimitBanner = useCallback(() => {
+    setShowRateLimitBanner((prev) => !prev);
+  }, []);
+
+  const handleToggleFeedbackModal = useCallback(() => {
+    setShowFeedbackModal((prev) => !prev);
+  }, []);
+
+  const handleToggleModelSelector = useCallback(() => {
+    setModelSelectorOpen((prev) => !prev);
+  }, []);
+
+  const handleToggleStreaming = useCallback(() => {
+    setIsStreaming((prev) => !prev);
+  }, []);
+
+  const handleSetInteractionCount = useCallback((count: number) => {
+    setInteractionCount(count);
+  }, []);
+
+  const handleResetFeedbackShown = useCallback(() => {
+    localStorage.removeItem("gemini_computer_feedback_shown");
+    setFeedbackShown(false);
+  }, []);
+
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -521,6 +557,7 @@ export default function GeminiComputerPage() {
         isVisible={showRateLimitBanner}
         onClose={handleCloseBanner}
         onTest={handleTestSystem}
+        onChangeModel={handleChangeModel}
       />
 
       <FeedbackModal
@@ -548,6 +585,8 @@ export default function GeminiComputerPage() {
                 selectedModel={selectedModel}
                 onModelChange={handleModelChange}
                 disabled={isStreaming}
+                isOpen={modelSelectorOpen}
+                onOpenChange={setModelSelectorOpen}
               />
               <div className="flex gap-2">
                 <div className="w-3 h-3 bg-[#34a853] rounded-full"></div>
@@ -625,6 +664,21 @@ export default function GeminiComputerPage() {
           <div className="text-xs text-gray-500">Made by Shubham</div>
         </div>
       </footer>
+
+      {/* Debug Panel - Only visible in development */}
+      <DebugPanel
+        showRateLimitBanner={showRateLimitBanner}
+        onToggleRateLimitBanner={handleToggleRateLimitBanner}
+        showFeedbackModal={showFeedbackModal}
+        onToggleFeedbackModal={handleToggleFeedbackModal}
+        modelSelectorOpen={modelSelectorOpen}
+        onToggleModelSelector={handleToggleModelSelector}
+        isStreaming={isStreaming}
+        onToggleStreaming={handleToggleStreaming}
+        interactionCount={interactionCount}
+        onSetInteractionCount={handleSetInteractionCount}
+        onResetFeedbackShown={handleResetFeedbackShown}
+      />
     </div>
   );
 }
