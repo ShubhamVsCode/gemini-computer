@@ -107,16 +107,24 @@ export function ModelSelector({
                       {model.icon}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div
-                        className={`font-medium text-sm ${
-                          model.id === selectedModel
-                            ? "text-blue-900"
-                            : "text-gray-900"
-                        }`}
-                      >
-                        {model.name}
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`font-medium text-sm ${
+                            model.id === selectedModel
+                              ? "text-blue-900"
+                              : "text-gray-900"
+                          }`}
+                        >
+                          {model.name}
+                        </span>
                         {model.isDefault && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          <span
+                            className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                              model.id === selectedModel
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
                             Default
                           </span>
                         )}
