@@ -25,6 +25,7 @@ export const ANALYTICS_EVENTS = {
   EMAIL_SUBMITTED_FOR_UPGRADE: "Email Submitted for Upgrade",
   USAGE_LIMIT_MODAL_DISMISSED: "Usage Limit Modal Dismissed",
   GENERATION_BLOCKED_BY_LIMIT: "Generation Blocked by Limit",
+  TWITTER_DM_CLICKED: "Twitter DM Clicked",
 
   // App-specific Events (for future use)
   APP_OPENED: "App Opened",
