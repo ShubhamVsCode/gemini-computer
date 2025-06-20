@@ -19,6 +19,13 @@ export const ANALYTICS_EVENTS = {
   FEEDBACK_SUBMITTED: "Feedback Submitted",
   FEEDBACK_DISMISSED: "Feedback Dismissed",
 
+  // Usage Limit Events
+  USAGE_LIMIT_REACHED: "Usage Limit Reached",
+  USAGE_LIMIT_MODAL_SHOWN: "Usage Limit Modal Shown",
+  EMAIL_SUBMITTED_FOR_UPGRADE: "Email Submitted for Upgrade",
+  USAGE_LIMIT_MODAL_DISMISSED: "Usage Limit Modal Dismissed",
+  GENERATION_BLOCKED_BY_LIMIT: "Generation Blocked by Limit",
+
   // App-specific Events (for future use)
   APP_OPENED: "App Opened",
   DESKTOP_RETURNED: "Desktop Returned",
@@ -51,6 +58,13 @@ export const EVENT_PROPERTIES = {
   // Footer properties
   LINK_TYPE: "linkType",
   LINK_DESTINATION: "linkDestination",
+  // Usage Limit properties
+  CURRENT_USAGE: "currentUsage",
+  USAGE_LIMIT: "usageLimit",
+  EMAIL_PROVIDED: "emailProvided",
+  WAS_UPGRADED: "wasUpgraded",
+  UPGRADE_FROM_USAGE: "upgradeFromUsage",
+  UPGRADE_TO_USAGE: "upgradeToUsage",
 } as const;
 
 // Issue types for warnings

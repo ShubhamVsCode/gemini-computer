@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
 import { RateLimitBanner } from "@/components/rate-limit-banner";
 import { FeedbackModal, FeedbackData } from "@/components/feedback-modal";
+import { UsageLimitModal } from "@/components/usage-limit-modal";
 import { ModelSelector, AVAILABLE_MODELS } from "@/components/model-selector";
 import { DebugPanel } from "@/components/debug-panel";
 import {
@@ -100,6 +101,10 @@ const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; display: flex; flex-direct
   
 </div>`;
 
+// Usage limit constants
+const FREE_USAGE_LIMIT = 10;
+const UPGRADED_USAGE_LIMIT = 20;
+
 export default function GeminiComputerPage() {
   const [currentContent, setCurrentContent] = useState(INITIAL_DESKTOP_CONTENT);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -109,6 +114,22 @@ export default function GeminiComputerPage() {
   const [interactionCount, setInteractionCount] = useState(0);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackShown, setFeedbackShown] = useState(false);
+  const [usageCount, setUsageCount] = useState(() => {
+    // Load usage count from localStorage
+    if (typeof window !== "undefined") {
+      const savedUsage = localStorage.getItem("gemini_computer_usage_count");
+      return savedUsage ? parseInt(savedUsage, 10) : 0;
+    }
+    return 0;
+  });
+  const [isUpgraded, setIsUpgraded] = useState(() => {
+    // Check if user has upgraded (provided email)
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("gemini_computer_upgraded") === "true";
+    }
+    return false;
+  });
+  const [showUsageLimitModal, setShowUsageLimitModal] = useState(false);
   const [selectedModel, setSelectedModel] = useState(() => {
     // Load saved model from localStorage or use default
     if (typeof window !== "undefined") {
@@ -249,13 +270,146 @@ export default function GeminiComputerPage() {
     [interactionCount]
   );
 
+  const handleChangeModel = useCallback(() => {
+    // Close the rate limit banner and open the model selector
+    setShowRateLimitBanner(false);
+    // Reset the session state so banner can show again if needed
+    setRateLimitBannerShown(false);
+    setModelSelectorOpen(true);
+  }, []);
+
+  // Debug panel handlers
+  const handleToggleRateLimitBanner = useCallback(() => {
+    setShowRateLimitBanner((prev) => !prev);
+    // Also reset session state when toggling from debug panel
+    if (showRateLimitBanner) {
+      setRateLimitBannerShown(false);
+    }
+  }, [showRateLimitBanner]);
+
+  const handleToggleFeedbackModal = useCallback(() => {
+    setShowFeedbackModal((prev) => !prev);
+  }, []);
+
+  const handleToggleModelSelector = useCallback(() => {
+    setModelSelectorOpen((prev) => !prev);
+  }, []);
+
+  const handleToggleStreaming = useCallback(() => {
+    setIsStreaming((prev) => !prev);
+  }, []);
+
+  const handleSetInteractionCount = useCallback((count: number) => {
+    setInteractionCount(count);
+  }, []);
+
+  const handleResetFeedbackShown = useCallback(() => {
+    localStorage.removeItem("gemini_computer_feedback_shown");
+    setFeedbackShown(false);
+  }, []);
+
+  // Debug panel handlers for usage limits
+  const handleToggleUsageLimitModal = useCallback(() => {
+    setShowUsageLimitModal((prev) => !prev);
+  }, []);
+
+  const handleSetUsageCount = useCallback((count: number) => {
+    setUsageCount(count);
+    localStorage.setItem("gemini_computer_usage_count", count.toString());
+  }, []);
+
+  const handleToggleUpgraded = useCallback(() => {
+    const newUpgraded = !isUpgraded;
+    setIsUpgraded(newUpgraded);
+    localStorage.setItem("gemini_computer_upgraded", newUpgraded.toString());
+    if (!newUpgraded) {
+      localStorage.removeItem("gemini_computer_user_email");
+    }
+  }, [isUpgraded]);
+
+  // Usage limit handlers
+  const handleEmailSubmit = useCallback(
+    async (email: string) => {
+      // Track email submission
+      posthog.capture(ANALYTICS_EVENTS.EMAIL_SUBMITTED_FOR_UPGRADE, {
+        [EVENT_PROPERTIES.EMAIL_PROVIDED]: email,
+        [EVENT_PROPERTIES.CURRENT_USAGE]: usageCount,
+        [EVENT_PROPERTIES.UPGRADE_FROM_USAGE]: FREE_USAGE_LIMIT,
+        [EVENT_PROPERTIES.UPGRADE_TO_USAGE]: UPGRADED_USAGE_LIMIT,
+        [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+      });
+
+      // Mark user as upgraded
+      localStorage.setItem("gemini_computer_upgraded", "true");
+      localStorage.setItem("gemini_computer_user_email", email);
+      setIsUpgraded(true);
+      setShowUsageLimitModal(false);
+    },
+    [usageCount]
+  );
+
+  const handleUsageLimitModalClose = useCallback(() => {
+    // Track modal dismissal
+    posthog.capture(ANALYTICS_EVENTS.USAGE_LIMIT_MODAL_DISMISSED, {
+      [EVENT_PROPERTIES.CURRENT_USAGE]: usageCount,
+      [EVENT_PROPERTIES.WAS_UPGRADED]: isUpgraded,
+      [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+    });
+
+    setShowUsageLimitModal(false);
+  }, [usageCount, isUpgraded]);
+
+  // Helper function to check if user can generate
+  const canGenerate = useCallback(() => {
+    const currentLimit = isUpgraded ? UPGRADED_USAGE_LIMIT : FREE_USAGE_LIMIT;
+    return usageCount < currentLimit;
+  }, [usageCount, isUpgraded]);
+
+  // Helper function to increment usage count
+  const incrementUsageCount = useCallback(() => {
+    const newCount = usageCount + 1;
+    setUsageCount(newCount);
+    localStorage.setItem("gemini_computer_usage_count", newCount.toString());
+    return newCount;
+  }, [usageCount]);
+
   const handleInteraction = useCallback(
     async (interactionId: string) => {
       if (isStreaming) return;
 
+      // Check usage limits before proceeding
+      if (!canGenerate()) {
+        const currentLimit = isUpgraded
+          ? UPGRADED_USAGE_LIMIT
+          : FREE_USAGE_LIMIT;
+
+        // Track that generation was blocked
+        posthog.capture(ANALYTICS_EVENTS.GENERATION_BLOCKED_BY_LIMIT, {
+          [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
+          [EVENT_PROPERTIES.CURRENT_USAGE]: usageCount,
+          [EVENT_PROPERTIES.USAGE_LIMIT]: currentLimit,
+          [EVENT_PROPERTIES.WAS_UPGRADED]: isUpgraded,
+          [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+        });
+
+        // Show usage limit modal
+        setShowUsageLimitModal(true);
+        posthog.capture(ANALYTICS_EVENTS.USAGE_LIMIT_MODAL_SHOWN, {
+          [EVENT_PROPERTIES.CURRENT_USAGE]: usageCount,
+          [EVENT_PROPERTIES.USAGE_LIMIT]: currentLimit,
+          [EVENT_PROPERTIES.WAS_UPGRADED]: isUpgraded,
+          [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+        });
+
+        return;
+      }
+
       console.log("🚀 Starting interaction:", interactionId);
       setIsStreaming(true);
       setStreamingContent(""); // Reset streaming content
+
+      // Increment usage count
+      const newUsageCount = incrementUsageCount();
 
       // Increment interaction count
       const newCount = interactionCount + 1;
@@ -506,56 +660,12 @@ export default function GeminiComputerPage() {
       interactionCount,
       feedbackShown,
       selectedModel,
+      canGenerate,
+      incrementUsageCount,
+      usageCount,
+      isUpgraded,
     ]
   );
-
-  const handleTestSystem = useCallback(async () => {
-    // Close the banner and try a simple interaction
-    setShowRateLimitBanner(false);
-    // Reset the session state so banner can show again if needed
-    setRateLimitBannerShown(false);
-
-    // Test with the desktop interaction
-    await handleInteraction("open_desktop");
-  }, [handleInteraction]);
-
-  const handleChangeModel = useCallback(() => {
-    // Close the rate limit banner and open the model selector
-    setShowRateLimitBanner(false);
-    // Reset the session state so banner can show again if needed
-    setRateLimitBannerShown(false);
-    setModelSelectorOpen(true);
-  }, []);
-
-  // Debug panel handlers
-  const handleToggleRateLimitBanner = useCallback(() => {
-    setShowRateLimitBanner((prev) => !prev);
-    // Also reset session state when toggling from debug panel
-    if (showRateLimitBanner) {
-      setRateLimitBannerShown(false);
-    }
-  }, [showRateLimitBanner]);
-
-  const handleToggleFeedbackModal = useCallback(() => {
-    setShowFeedbackModal((prev) => !prev);
-  }, []);
-
-  const handleToggleModelSelector = useCallback(() => {
-    setModelSelectorOpen((prev) => !prev);
-  }, []);
-
-  const handleToggleStreaming = useCallback(() => {
-    setIsStreaming((prev) => !prev);
-  }, []);
-
-  const handleSetInteractionCount = useCallback((count: number) => {
-    setInteractionCount(count);
-  }, []);
-
-  const handleResetFeedbackShown = useCallback(() => {
-    localStorage.removeItem("gemini_computer_feedback_shown");
-    setFeedbackShown(false);
-  }, []);
 
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
@@ -590,7 +700,7 @@ export default function GeminiComputerPage() {
       <RateLimitBanner
         isVisible={showRateLimitBanner}
         onClose={handleCloseBanner}
-        onTest={handleTestSystem}
+        // onTest={handleTestSystem}
         onChangeModel={handleChangeModel}
       />
 
@@ -598,6 +708,14 @@ export default function GeminiComputerPage() {
         isVisible={showFeedbackModal}
         onClose={handleFeedbackClose}
         onSubmit={handleFeedbackSubmit}
+      />
+
+      <UsageLimitModal
+        isVisible={showUsageLimitModal}
+        onClose={handleUsageLimitModalClose}
+        onSubmit={handleEmailSubmit}
+        currentUsage={usageCount}
+        isUpgraded={isUpgraded}
       />
 
       {isStreaming && (
@@ -618,6 +736,16 @@ export default function GeminiComputerPage() {
               {windowTitle}
             </h1>
             <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+              {/* Usage Counter */}
+              <div className="hidden sm:flex items-center gap-1 px-2 py-1 bg-white/10 rounded text-xs">
+                <span className="text-white/70">
+                  {usageCount}/
+                  {isUpgraded ? UPGRADED_USAGE_LIMIT : FREE_USAGE_LIMIT}
+                </span>
+                {!isUpgraded && usageCount >= FREE_USAGE_LIMIT - 2 && (
+                  <span className="text-orange-300">⚡</span>
+                )}
+              </div>
               <ModelSelector
                 selectedModel={selectedModel}
                 onModelChange={handleModelChange}
@@ -717,6 +845,8 @@ export default function GeminiComputerPage() {
         onToggleRateLimitBanner={handleToggleRateLimitBanner}
         showFeedbackModal={showFeedbackModal}
         onToggleFeedbackModal={handleToggleFeedbackModal}
+        showUsageLimitModal={showUsageLimitModal}
+        onToggleUsageLimitModal={handleToggleUsageLimitModal}
         modelSelectorOpen={modelSelectorOpen}
         onToggleModelSelector={handleToggleModelSelector}
         isStreaming={isStreaming}
@@ -724,6 +854,10 @@ export default function GeminiComputerPage() {
         interactionCount={interactionCount}
         onSetInteractionCount={handleSetInteractionCount}
         onResetFeedbackShown={handleResetFeedbackShown}
+        usageCount={usageCount}
+        onSetUsageCount={handleSetUsageCount}
+        isUpgraded={isUpgraded}
+        onToggleUpgraded={handleToggleUpgraded}
       />
     </div>
   );

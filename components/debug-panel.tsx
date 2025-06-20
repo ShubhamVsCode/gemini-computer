@@ -20,6 +20,10 @@ interface DebugPanelProps {
   showFeedbackModal: boolean;
   onToggleFeedbackModal: () => void;
 
+  // Usage limit modal controls
+  showUsageLimitModal: boolean;
+  onToggleUsageLimitModal: () => void;
+
   // Model selector controls
   modelSelectorOpen: boolean;
   onToggleModelSelector: () => void;
@@ -32,6 +36,12 @@ interface DebugPanelProps {
   interactionCount: number;
   onSetInteractionCount: (count: number) => void;
 
+  // Usage limit controls
+  usageCount: number;
+  onSetUsageCount: (count: number) => void;
+  isUpgraded: boolean;
+  onToggleUpgraded: () => void;
+
   // Reset feedback shown state
   onResetFeedbackShown: () => void;
 }
@@ -41,12 +51,18 @@ export function DebugPanel({
   onToggleRateLimitBanner,
   showFeedbackModal,
   onToggleFeedbackModal,
+  showUsageLimitModal,
+  onToggleUsageLimitModal,
   modelSelectorOpen,
   onToggleModelSelector,
   isStreaming,
   onToggleStreaming,
   interactionCount,
   onSetInteractionCount,
+  usageCount,
+  onSetUsageCount,
+  isUpgraded,
+  onToggleUpgraded,
   onResetFeedbackShown,
 }: DebugPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -205,6 +221,55 @@ export function DebugPanel({
                   {count}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Usage Limit Controls */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-900">
+              Usage Limits
+            </h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">
+                  Usage: {usageCount}/{isUpgraded ? "20" : "10"}
+                </span>
+                <button
+                  onClick={onToggleUsageLimitModal}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${
+                    showUsageLimitModal
+                      ? "bg-orange-100 text-orange-800 border border-orange-300"
+                      : "bg-gray-100 text-gray-700 border border-gray-300"
+                  }`}
+                >
+                  {showUsageLimitModal ? "Hide" : "Show"} Modal
+                </button>
+              </div>
+              <div className="grid grid-cols-4 gap-1">
+                {[0, 5, 10, 15, 20].map((count) => (
+                  <button
+                    key={count}
+                    onClick={() => onSetUsageCount(count)}
+                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                      usageCount === count
+                        ? "bg-orange-100 text-orange-800 border border-orange-300"
+                        : "bg-gray-100 text-gray-700 border border-gray-300"
+                    }`}
+                  >
+                    {count}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={onToggleUpgraded}
+                className={`w-full px-2 py-1 text-xs rounded transition-colors ${
+                  isUpgraded
+                    ? "bg-green-100 text-green-800 border border-green-300"
+                    : "bg-gray-100 text-gray-700 border border-gray-300"
+                }`}
+              >
+                {isUpgraded ? "Upgraded" : "Free Tier"}
+              </button>
             </div>
           </div>
 
