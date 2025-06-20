@@ -576,7 +576,7 @@ export default function GeminiComputerPage() {
       {/* Main content area */}
       <div className="flex-1 flex items-center justify-center">
         {/* Static Window Frame */}
-        <div className="w-[90%] max-w-[1000px] h-[600px] bg-white rounded-lg shadow-lg flex flex-col">
+        <div className="w-[90%] max-w-[1000px] h-[600px] overflow-hidden bg-white rounded-lg shadow-lg flex flex-col">
           {/* Window Header - Static */}
           <div className="bg-[#202124] text-white px-5 py-3 rounded-t-lg flex items-center justify-between">
             <h1 className="m-0 text-lg font-medium">{windowTitle}</h1>
