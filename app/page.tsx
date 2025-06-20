@@ -440,8 +440,14 @@ export default function GeminiComputerPage() {
             [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
           });
 
-          // Don't automatically show rate limit banner for empty content
-          // Only show it for confirmed rate limit errors in the catch block
+          // Show rate limit banner for empty content as it's likely due to rate limiting
+          console.log("🚫 Empty content received - likely rate limiting");
+          if (!rateLimitBannerShown) {
+            setShowRateLimitBanner(true);
+            setRateLimitBannerShown(true);
+          } else {
+            console.log("⏭️ Rate limit banner already shown in this session");
+          }
         }
         setStreamingContent("");
       } catch (error) {

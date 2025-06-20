@@ -8,6 +8,7 @@ import {
   LEGACY_SYSTEM_PROMPT,
   createUserPrompt,
 } from "@/lib/prompt-constants";
+import { isRateLimitError } from "@/lib/analytics-constants";
 
 interface InteractionContext {
   currentContent: string;
@@ -83,10 +84,27 @@ export async function generateNextScreenStream(context: InteractionContext) {
       error instanceof Error ? error.stack : undefined
     );
 
-    // Return fallback response in case of error
+    // Check if this is a rate limit error
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    const isRateLimit = isRateLimitError(errorMessage);
+
+    console.log("🔍 Error analysis:", {
+      errorMessage,
+      isRateLimit,
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+    });
+
+    // If it's a rate limit error, throw it so the client can handle it
+    if (isRateLimit) {
+      console.log("🚫 Rate limit error detected - propagating to client");
+      throw error;
+    }
+
+    // For non-rate-limit errors, return fallback response
     const fallbackContent = getDesktopContent();
     const cleanedFallback = cleanupGeneratedContent(fallbackContent);
-    console.log("🔄 Returning fallback content");
+    console.log("🔄 Returning fallback content for non-rate-limit error");
     return new Response(cleanedFallback, {
       headers: {
         "Content-Type": "text/plain",
