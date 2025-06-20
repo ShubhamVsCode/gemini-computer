@@ -59,9 +59,11 @@ export function GeminiComputerRenderer({
       className="flex-1 flex flex-col overflow-auto"
       style={{
         fontFamily: "system-ui, -apple-system, sans-serif",
-        fontSize: "14px",
+        fontSize: "clamp(12px, 2.5vw, 14px)",
         lineHeight: "1.5",
         scrollBehavior: "smooth",
+        WebkitOverflowScrolling: "touch",
+        touchAction: "manipulation",
       }}
     />
   );

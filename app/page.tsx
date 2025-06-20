@@ -14,78 +14,78 @@ import {
   isRateLimitError,
 } from "@/lib/analytics-constants";
 
-// Initial desktop content - Beautiful and modern design
+// Initial desktop content - Beautiful and modern design with mobile responsiveness
 const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; display: flex; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; overflow: hidden;">
   
   <!-- Background Pattern -->
   <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px); background-size: 50px 50px;"></div>
   
   <!-- Main Content Area -->
-  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 1;">
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; position: relative; z-index: 1;">
     
     <!-- App Grid Container -->
-    <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
+    <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
       <!-- App Grid -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 25px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 16px;">
         
         <!-- Desktop -->
-        <div data-interaction-id="open_desktop" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🖥️</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Desktop</div>
+        <div data-interaction-id="open_desktop" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🖥️</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Desktop</div>
         </div>
         
         <!-- Documents -->
-        <div data-interaction-id="open_documents" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #ffecd2, #fcb69f); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(252, 182, 159, 0.3);">📁</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Documents</div>
+        <div data-interaction-id="open_documents" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ffecd2, #fcb69f); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(252, 182, 159, 0.3);">📁</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Documents</div>
         </div>
         
         <!-- Notepad -->
-        <div data-interaction-id="open_notepad" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);">📝</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Notepad</div>
+        <div data-interaction-id="open_notepad" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);">📝</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Notepad</div>
         </div>
         
         <!-- Settings -->
-        <div data-interaction-id="open_settings" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #d299c2, #fef9d7); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(210, 153, 194, 0.3);">⚙️</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Settings</div>
+        <div data-interaction-id="open_settings" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #d299c2, #fef9d7); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(210, 153, 194, 0.3);">⚙️</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Settings</div>
         </div>
         
         <!-- Web -->
-        <div data-interaction-id="open_web" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #89f7fe, #66a6ff); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(137, 247, 254, 0.3);">🌐</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Web</div>
+        <div data-interaction-id="open_web" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #89f7fe, #66a6ff); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(137, 247, 254, 0.3);">🌐</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Web</div>
         </div>
         
         <!-- Calculator -->
-        <div data-interaction-id="open_calculator" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #fa709a, #fee140); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);">🔢</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Calculator</div>
+        <div data-interaction-id="open_calculator" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #fa709a, #fee140); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);">🔢</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Calculator</div>
         </div>
         
         <!-- Travel -->
-        <div data-interaction-id="open_travel" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a1c4fd, #c2e9fb); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(161, 196, 253, 0.3);">✈️</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Travel</div>
+        <div data-interaction-id="open_travel" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #a1c4fd, #c2e9fb); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(161, 196, 253, 0.3);">✈️</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Travel</div>
         </div>
         
         <!-- Shopping -->
-        <div data-interaction-id="open_shopping" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #ff9a9e, #fecfef); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);">🛒</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Shopping</div>
+        <div data-interaction-id="open_shopping" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ff9a9e, #fecfef); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);">🛒</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Shopping</div>
         </div>
         
         <!-- Games -->
-        <div data-interaction-id="open_games" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🎮</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Games</div>
+        <div data-interaction-id="open_games" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">🎮</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Games</div>
         </div>
         
         <!-- Trash -->
-        <div data-interaction-id="open_trash" style="cursor: pointer; text-align: center; padding: 20px 15px; border-radius: 16px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-          <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #868f96, #596164); border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(134, 143, 150, 0.3);">🗑️</div>
-          <div style="font-size: 13px; color: #495057; font-weight: 500;">Trash</div>
+        <div data-interaction-id="open_trash" style="cursor: pointer; text-align: center; padding: 12px 8px; border-radius: 12px; transition: all 0.3s ease; background: #f8f9fa;" onmouseover="this.style.backgroundColor='#e9ecef'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'" onmouseout="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #868f96, #596164); border-radius: 12px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 4px 15px rgba(134, 143, 150, 0.3);">🗑️</div>
+          <div style="font-size: 12px; color: #495057; font-weight: 500;">Trash</div>
         </div>
         
       </div>
@@ -94,7 +94,7 @@ const INITIAL_DESKTOP_CONTENT = `<div style="flex: 1; display: flex; flex-direct
   </div>
   
   <!-- Footer -->
-  <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.8); font-size: 14px; position: relative; z-index: 1;">
+  <div style="text-align: center; padding: 12px; color: rgba(255,255,255,0.8); font-size: 12px; position: relative; z-index: 1;">
     <p style="margin: 0;">Powered by AI • Every interaction creates something unique</p>
   </div>
   
@@ -595,20 +595,23 @@ export default function GeminiComputerPage() {
       />
 
       {isStreaming && (
-        <div className="fixed top-4 right-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm shadow-lg flex items-center gap-2">
+        <div className="fixed top-4 right-4 z-50 bg-blue-600 text-white px-3 py-2 md:px-4 rounded-lg text-xs md:text-sm shadow-lg flex items-center gap-2">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          Generating interface...
+          <span className="hidden sm:inline">Generating interface...</span>
+          <span className="sm:hidden">Generating...</span>
         </div>
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex items-center justify-center">
-        {/* Static Window Frame */}
-        <div className="w-[90%] max-w-[1000px] h-[600px] overflow-hidden bg-white rounded-lg shadow-lg flex flex-col">
-          {/* Window Header - Static */}
-          <div className="bg-[#202124] text-white px-5 py-3 rounded-t-lg flex items-center justify-between">
-            <h1 className="m-0 text-lg font-medium">{windowTitle}</h1>
-            <div className="flex items-center gap-3">
+      <div className="flex-1 flex items-center justify-center md:p-4">
+        {/* Responsive Window Frame */}
+        <div className="w-full h-full md:w-[90%] md:max-w-[1000px] md:h-[600px] overflow-hidden bg-white rounded-none md:rounded-lg shadow-none md:shadow-lg flex flex-col">
+          {/* Window Header - Responsive */}
+          <div className="bg-[#202124] text-white px-3 py-2 md:px-5 md:py-3 rounded-none md:rounded-t-lg flex items-center justify-between min-h-[48px] md:min-h-[auto]">
+            <h1 className="m-0 text-base md:text-lg font-medium truncate pr-2">
+              {windowTitle}
+            </h1>
+            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
               <ModelSelector
                 selectedModel={selectedModel}
                 onModelChange={handleModelChange}
@@ -616,10 +619,10 @@ export default function GeminiComputerPage() {
                 isOpen={modelSelectorOpen}
                 onOpenChange={setModelSelectorOpen}
               />
-              <div className="flex gap-2">
-                <div className="w-3 h-3 bg-[#34a853] rounded-full"></div>
-                <div className="w-3 h-3 bg-[#fbbc04] rounded-full"></div>
-                <div className="w-3 h-3 bg-[#ea4335] rounded-full"></div>
+              <div className="flex gap-1.5 md:gap-2">
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-[#34a853] rounded-full"></div>
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-[#fbbc04] rounded-full"></div>
+                <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-[#ea4335] rounded-full"></div>
               </div>
             </div>
           </div>
@@ -632,9 +635,9 @@ export default function GeminiComputerPage() {
         </div>
       </div>
 
-      {/* Footer with Buy me a coffee button and socials */}
-      <footer className="w-full py-4 bg-white border-t border-gray-200">
-        <div className="text-center space-y-3">
+      {/* Footer with Buy me a coffee button and socials - Responsive */}
+      <footer className="w-full py-2 md:py-4 bg-white border-t border-gray-200">
+        <div className="text-center space-y-2 md:space-y-3">
           {/* Buy me a coffee button */}
           <div>
             <a
@@ -644,14 +647,15 @@ export default function GeminiComputerPage() {
               onClick={() =>
                 handleFooterLinkClick("donation", "https://coff.ee/shubhamvsc5")
               }
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-lg shadow-orange-400/30"
+              className="inline-flex items-center gap-1.5 md:gap-2 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-lg shadow-orange-400/30"
             >
-              ☕ Buy me a coffee
+              ☕ <span className="hidden sm:inline">Buy me a coffee</span>
+              <span className="sm:hidden">Coffee</span>
             </a>
           </div>
 
           {/* Social media links */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-3 md:gap-4">
             <a
               href="https://github.com/shubhamvscode"
               target="_blank"
@@ -665,7 +669,11 @@ export default function GeminiComputerPage() {
               className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
               aria-label="GitHub"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 md:w-5 md:h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
             </a>
@@ -683,7 +691,11 @@ export default function GeminiComputerPage() {
               className="text-gray-600 hover:text-blue-500 transition-colors duration-200"
               aria-label="Twitter"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 md:w-5 md:h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
               </svg>
             </a>
