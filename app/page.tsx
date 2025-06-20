@@ -105,6 +105,7 @@ export default function GeminiComputerPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
   const [showRateLimitBanner, setShowRateLimitBanner] = useState(false);
+  const [rateLimitBannerShown, setRateLimitBannerShown] = useState(false);
   const [interactionCount, setInteractionCount] = useState(0);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackShown, setFeedbackShown] = useState(false);
@@ -170,6 +171,8 @@ export default function GeminiComputerPage() {
   // Rate limit banner handlers
   const handleCloseBanner = useCallback(() => {
     setShowRateLimitBanner(false);
+    // Reset the session state so banner can show again if needed
+    setRateLimitBannerShown(false);
   }, []);
 
   // Feedback modal handlers
@@ -437,8 +440,8 @@ export default function GeminiComputerPage() {
             [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
           });
 
-          // Show rate limit banner for empty content warnings
-          setShowRateLimitBanner(true);
+          // Don't automatically show rate limit banner for empty content
+          // Only show it for confirmed rate limit errors in the catch block
         }
         setStreamingContent("");
       } catch (error) {
@@ -448,6 +451,14 @@ export default function GeminiComputerPage() {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
         const isRateLimit = isRateLimitError(errorMessage);
+
+        // Log the error details for debugging
+        console.log("🔍 Error analysis:", {
+          errorMessage,
+          isRateLimit,
+          errorType:
+            error instanceof Error ? error.constructor.name : typeof error,
+        });
 
         // Track error with PostHog
         posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_ERROR, {
@@ -462,9 +473,18 @@ export default function GeminiComputerPage() {
             : WARNING_ISSUES.API_ERROR,
         });
 
-        // Show rate limit banner if applicable
+        // Only show rate limit banner for confirmed rate limit errors
         if (isRateLimit) {
-          setShowRateLimitBanner(true);
+          console.log("🚫 Confirmed rate limit error - showing banner");
+          // Only show the banner if it hasn't been shown in this session yet
+          if (!rateLimitBannerShown) {
+            setShowRateLimitBanner(true);
+            setRateLimitBannerShown(true);
+          } else {
+            console.log("⏭️ Rate limit banner already shown in this session");
+          }
+        } else {
+          console.log("⚠️ Non-rate-limit error - not showing banner");
         }
 
         // Fallback to current content if error occurs
@@ -486,6 +506,8 @@ export default function GeminiComputerPage() {
   const handleTestSystem = useCallback(async () => {
     // Close the banner and try a simple interaction
     setShowRateLimitBanner(false);
+    // Reset the session state so banner can show again if needed
+    setRateLimitBannerShown(false);
 
     // Test with the desktop interaction
     await handleInteraction("open_desktop");
@@ -494,13 +516,19 @@ export default function GeminiComputerPage() {
   const handleChangeModel = useCallback(() => {
     // Close the rate limit banner and open the model selector
     setShowRateLimitBanner(false);
+    // Reset the session state so banner can show again if needed
+    setRateLimitBannerShown(false);
     setModelSelectorOpen(true);
   }, []);
 
   // Debug panel handlers
   const handleToggleRateLimitBanner = useCallback(() => {
     setShowRateLimitBanner((prev) => !prev);
-  }, []);
+    // Also reset session state when toggling from debug panel
+    if (showRateLimitBanner) {
+      setRateLimitBannerShown(false);
+    }
+  }, [showRateLimitBanner]);
 
   const handleToggleFeedbackModal = useCallback(() => {
     setShowFeedbackModal((prev) => !prev);

@@ -1,14 +1,19 @@
-"use server"
+"use server";
 
-import { streamText } from "ai"
-import { google } from "@ai-sdk/google"
-import { AISDKExporter } from "langsmith/vercel"
+import { streamText } from "ai";
+import { google } from "@ai-sdk/google";
+import { AISDKExporter } from "langsmith/vercel";
+import {
+  SYSTEM_PROMPT,
+  LEGACY_SYSTEM_PROMPT,
+  createUserPrompt,
+} from "@/lib/prompt-constants";
 
 interface InteractionContext {
-  currentContent: string
-  interactionId: string
-  timestamp: number
-  modelId?: string
+  currentContent: string;
+  interactionId: string;
+  timestamp: number;
+  modelId?: string;
 }
 
 // Function to clean up markdown code blocks from generated content
@@ -19,11 +24,11 @@ function cleanupGeneratedContent(content: string): string {
   let cleaned = content;
 
   // Remove ```html or ``` at the beginning
-  cleaned = cleaned.replace(/^```html\s*/i, '');
-  cleaned = cleaned.replace(/^```\s*/, '');
+  cleaned = cleaned.replace(/^```html\s*/i, "");
+  cleaned = cleaned.replace(/^```\s*/, "");
 
   // Remove ``` at the end
-  cleaned = cleaned.replace(/\s*```\s*$/, '');
+  cleaned = cleaned.replace(/\s*```\s*$/, "");
 
   // Trim any extra whitespace
   cleaned = cleaned.trim();
@@ -34,88 +39,22 @@ function cleanupGeneratedContent(content: string): string {
 export async function generateNextScreenStream(context: InteractionContext) {
   const modelId = context.modelId || "gemini-2.5-flash-lite-preview-06-17";
 
-  console.log('🎯 generateNextScreenStream called with:', {
+  console.log("🎯 generateNextScreenStream called with:", {
     interactionId: context.interactionId,
     contentLength: context.currentContent?.length || 0,
-    modelId
+    modelId,
   });
 
   try {
     console.log(`🤖 Calling streamText with ${modelId}...`);
     const result = await streamText({
       model: google(modelId),
-      system: `You are the AI brain behind "Gemini Computer", a non-deterministic operating system. Your job is to generate the HTML content for the next screen based on the current content and the user's interaction.
-
-IMPORTANT: You ONLY generate the content that goes INSIDE the window frame. Do NOT generate the full HTML document, window header, or outer structure. Just generate the inner content area.
-
-CRITICAL PRINCIPLE - NON-DETERMINISM:
-This OS is non-deterministic. When a user performs the same action (like opening Documents or launching Travel app), you should generate DIFFERENT content each time. Be creative and plausible, but make variations.
-
-DESIGN SYSTEM:
-- Content area styling: Use inline CSS styles
-- Colors: 
-  * Background areas: #ffffff (white) or #f8f9fa (light grey)
-  * Text: #202124 (dark grey) or #5f6368 (medium grey)  
-  * Action Buttons: #1a73e8 (blue) with white text
-  * Hover states: #f8f9fa background
-- Typography: Clean sans-serif (system-ui, -apple-system, sans-serif)
-- Icons: Use emojis for simple, universal icons
-- Spacing: Use appropriate padding and margins for clean layouts
-
-CONTENT STRUCTURE REQUIREMENTS:
-- ALWAYS include proper data-interaction-id attributes for clickable elements
-- Use flex: 1 for main containers to fill the window
-- Include padding for comfortable spacing
-- Make content responsive and accessible
-- Include "Back to Desktop" buttons when appropriate (except on desktop)
-
-APPS AND BEHAVIORS:
-
-1. DESKTOP:
-   - Grid of 10 app icons with labels
-   - Each icon should have unique data-interaction-id like "open_documents", "open_notepad", etc.
-
-2. DOCUMENTS FOLDER (NON-DETERMINISTIC):
-   - File explorer view with different files/folders each time
-   - Generate plausible file names (.docx, .txt, .xlsx, folders)
-   - Files should be clickable with data-interaction-id="open_file_[filename]"
-   - Folders clickable with data-interaction-id="open_folder_[foldername]"
-
-3. SETTINGS APP:
-   - Grid of setting categories: Display, Sound, Network, Privacy, Wallpaper, About
-   - Sound settings should show volume slider, device dropdowns, mute checkbox
-
-4. TRAVEL APP (HIGHLY NON-DETERMINISTIC):
-   - Version A: Map search with location input and preset city buttons
-   - Version B: Travel planner with trip planning and booking views
-   - Version C: Flight tracker with departure boards
-   - Version D: Weather app for travel destinations
-   - etc. - be creative with different travel-related interfaces
-
-5. OTHER APPS:
-   - Generate appropriate interfaces for Calculator, Web, Shopping, Games, etc.
-   - Make each launch potentially different
-
-INTERACTION HANDLING:
-Based on the interaction ID, determine what the user clicked and generate the appropriate content. Common patterns:
-- "open_[app]" → Launch that app content
-- "back_to_desktop" → Return to main desktop content
-- "open_file_[filename]" → Open file viewer content
-- "open_folder_[foldername]" → Navigate into folder content
-- "settings_[category]" → Open settings subcategory content
-
-OUTPUT FORMAT:
-Return ONLY the content HTML that goes inside the window frame. Start with a div that has flex: 1 and appropriate styling. No explanations, no markdown formatting, no code block syntax, just pure HTML content with inline styles.`,
-
-      prompt: `Current content area:
-${context.currentContent}
-
-User interaction: ${context.interactionId}
-    Timestamp: ${new Date(context.timestamp).toISOString()}
-
-Generate the content HTML for the next screen.Remember to be non - deterministic - if this is a repeated action, create fresh, different content while maintaining the core functionality.
-
-Focus on creating intuitive interfaces that feel like a real operating system.Include proper data - interaction - id attributes for all clickable elements.`,
+      system: SYSTEM_PROMPT,
+      prompt: createUserPrompt(
+        context.currentContent,
+        context.interactionId,
+        context.timestamp
+      ),
       experimental_telemetry: AISDKExporter.getSettings({
         runName: `generate-ui-${context.interactionId}`,
         metadata: {
@@ -123,27 +62,35 @@ Focus on creating intuitive interfaces that feel like a real operating system.In
           timestamp: context.timestamp,
           contentLength: context.currentContent?.length || 0,
           modelId,
-          modelName: modelId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-        }
+          modelName: modelId
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase()),
+        },
       }),
     });
 
-    console.log('✅ streamText result created, calling toDataStreamResponse...');
+    console.log(
+      "✅ streamText result created, calling toDataStreamResponse..."
+    );
     const response = result.toDataStreamResponse();
-    console.log('📡 toDataStreamResponse completed');
+    console.log("📡 toDataStreamResponse completed");
     return response;
   } catch (error) {
     console.error("❌ Error generating next screen:", error);
-    console.error("❌ Error details:", error instanceof Error ? error.message : 'Unknown error', error instanceof Error ? error.stack : undefined);
+    console.error(
+      "❌ Error details:",
+      error instanceof Error ? error.message : "Unknown error",
+      error instanceof Error ? error.stack : undefined
+    );
 
     // Return fallback response in case of error
     const fallbackContent = getDesktopContent();
     const cleanedFallback = cleanupGeneratedContent(fallbackContent);
-    console.log('🔄 Returning fallback content');
+    console.log("🔄 Returning fallback content");
     return new Response(cleanedFallback, {
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        "Content-Type": "text/plain",
+      },
     });
   }
 }
@@ -243,23 +190,12 @@ export async function generateNextScreen(context: InteractionContext) {
   try {
     const result = await streamText({
       model: google(modelId),
-      system: `You are the AI brain behind "Gemini Computer", a non-deterministic operating system. Your job is to generate the HTML content for the next screen based on the current content and the user's interaction.
-
-IMPORTANT: You ONLY generate the content that goes INSIDE the window frame. Do NOT generate the full HTML document, window header, or outer structure. Just generate the inner content area.
-
-CRITICAL PRINCIPLE - NON-DETERMINISM:
-This OS is non-deterministic. When a user performs the same action (like opening Documents or launching Travel app), you should generate DIFFERENT content each time. Be creative and plausible, but make variations.
-
-OUTPUT FORMAT:
-Return ONLY the content HTML that goes inside the window frame. Start with a div that has flex: 1 and appropriate styling. No explanations, no markdown formatting, no code block syntax, just pure HTML content with inline styles.`,
-
-      prompt: `Current content area:
-${context.currentContent}
-
-User interaction: ${context.interactionId}
-    Timestamp: ${new Date(context.timestamp).toISOString()}
-
-Generate the content HTML for the next screen.Remember to be non - deterministic - if this is a repeated action, create fresh, different content while maintaining the core functionality.`,
+      system: LEGACY_SYSTEM_PROMPT,
+      prompt: createUserPrompt(
+        context.currentContent,
+        context.interactionId,
+        context.timestamp
+      ),
       experimental_telemetry: AISDKExporter.getSettings({
         runName: `generate-ui-legacy-${context.interactionId}`,
         metadata: {
@@ -267,9 +203,11 @@ Generate the content HTML for the next screen.Remember to be non - deterministic
           timestamp: context.timestamp,
           contentLength: context.currentContent?.length || 0,
           modelId,
-          modelName: modelId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          function: "generateNextScreen"
-        }
+          modelName: modelId
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase()),
+          function: "generateNextScreen",
+        },
       }),
     });
 
@@ -282,7 +220,7 @@ Generate the content HTML for the next screen.Remember to be non - deterministic
 
     return {
       content: cleanupGeneratedContent(getDesktopContent()),
-      success: false
+      success: false,
     };
   }
 }
