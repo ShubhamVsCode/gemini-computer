@@ -23,13 +23,13 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     name: "Gemini 2.5 Flash-Lite Preview",
     description: "Latest experimental model with cutting-edge features",
     icon: <FlaskConical className="w-4 h-4" />,
-    isDefault: true,
   },
   {
     id: "gemini-2.0-flash-lite",
     name: "Gemini 2.0 Flash Lite",
     description: "Ultra-fast responses with enhanced creativity",
     icon: <Zap className="w-4 h-4" />,
+    isDefault: true,
   },
   {
     id: "gemini-1.5-flash",
