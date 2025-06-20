@@ -10,6 +10,10 @@ export const ANALYTICS_EVENTS = {
     UI_GENERATION_WARNING: "UI Generation Warning",
     UI_GENERATION_ERROR: "UI Generation Error",
 
+    // Model Events
+    MODEL_CHANGED: "Model Changed",
+    MODEL_LOADED_FROM_PREFERENCE: "Model Loaded From Preference",
+
     // Feedback Events
     FEEDBACK_MODAL_SHOWN: "Feedback Modal Shown",
     FEEDBACK_SUBMITTED: "Feedback Submitted",
@@ -37,6 +41,10 @@ export const EVENT_PROPERTIES = {
     FEEDBACK_COMMENTS: "comments",
     FEEDBACK_IMPROVEMENTS: "improvements",
     INTERACTION_COUNT: "interactionCount",
+    // Model properties
+    MODEL_ID: "modelId",
+    MODEL_NAME: "modelName",
+    PREVIOUS_MODEL: "previousModel",
 } as const;
 
 // Issue types for warnings

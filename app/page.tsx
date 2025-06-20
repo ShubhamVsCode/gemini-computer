@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
 import { RateLimitBanner } from "@/components/rate-limit-banner";
 import { FeedbackModal, FeedbackData } from "@/components/feedback-modal";
+import { ModelSelector, AVAILABLE_MODELS } from "@/components/model-selector";
 import {
   ANALYTICS_EVENTS,
   EVENT_PROPERTIES,
@@ -106,6 +107,16 @@ export default function GeminiComputerPage() {
   const [interactionCount, setInteractionCount] = useState(0);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackShown, setFeedbackShown] = useState(false);
+  const [selectedModel, setSelectedModel] = useState(() => {
+    // Load saved model from localStorage or use default
+    if (typeof window !== "undefined") {
+      const savedModel = localStorage.getItem("gemini_computer_selected_model");
+      if (savedModel && AVAILABLE_MODELS.some((m) => m.id === savedModel)) {
+        return savedModel;
+      }
+    }
+    return AVAILABLE_MODELS[0].id;
+  });
 
   const [windowTitle, setWindowTitle] = useState("Gemini Computer");
 
@@ -191,6 +202,33 @@ export default function GeminiComputerPage() {
     setShowFeedbackModal(false);
   }, [interactionCount]);
 
+  // Model change handler
+  const handleModelChange = useCallback(
+    (newModelId: string) => {
+      const previousModel = selectedModel;
+      setSelectedModel(newModelId);
+
+      // Save model preference to localStorage
+      localStorage.setItem("gemini_computer_selected_model", newModelId);
+
+      // Track model change
+      const newModelData = AVAILABLE_MODELS.find((m) => m.id === newModelId);
+      posthog.capture(ANALYTICS_EVENTS.MODEL_CHANGED, {
+        [EVENT_PROPERTIES.MODEL_ID]: newModelId,
+        [EVENT_PROPERTIES.MODEL_NAME]: newModelData?.name || newModelId,
+        [EVENT_PROPERTIES.PREVIOUS_MODEL]: previousModel,
+        [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+      });
+    },
+    [selectedModel]
+  );
+
+  // Helper function to reset model preference (for future use in settings)
+  const resetModelPreference = useCallback(() => {
+    localStorage.removeItem("gemini_computer_selected_model");
+    setSelectedModel(AVAILABLE_MODELS[0].id);
+  }, []);
+
   const handleInteraction = useCallback(
     async (interactionId: string) => {
       if (isStreaming) return;
@@ -204,9 +242,14 @@ export default function GeminiComputerPage() {
       setInteractionCount(newCount);
 
       // Track interaction start with PostHog
+      const selectedModelData = AVAILABLE_MODELS.find(
+        (m) => m.id === selectedModel
+      );
       posthog.capture(ANALYTICS_EVENTS.UI_INTERACTION_STARTED, {
         [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
         [EVENT_PROPERTIES.INTERACTION_COUNT]: newCount,
+        [EVENT_PROPERTIES.MODEL_ID]: selectedModel,
+        [EVENT_PROPERTIES.MODEL_NAME]: selectedModelData?.name || selectedModel,
         [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
       });
 
@@ -260,6 +303,7 @@ export default function GeminiComputerPage() {
             currentContent,
             interactionId,
             timestamp: Date.now(),
+            modelId: selectedModel,
           }),
         });
 
@@ -268,53 +312,82 @@ export default function GeminiComputerPage() {
           response.status,
           response.statusText
         );
+        console.log(
+          "📡 Response headers:",
+          Object.fromEntries(response.headers.entries())
+        );
 
         if (!response.ok) {
-          throw new Error(
-            `Failed to generate screen: ${response.status} ${response.statusText}`
-          );
+          // Try to get error details from response
+          let errorDetails = `${response.status} ${response.statusText}`;
+          try {
+            const errorText = await response.text();
+            console.error("❌ Error response body:", errorText);
+            errorDetails += ` - ${errorText}`;
+          } catch (parseError) {
+            console.error("❌ Could not parse error response:", parseError);
+          }
+
+          throw new Error(`Failed to generate screen: ${errorDetails}`);
         }
 
         const reader = response.body?.getReader();
         if (!reader) {
+          console.error("❌ No reader available from response body");
           throw new Error("No reader available");
         }
 
         console.log("📖 Starting to read stream...");
+        console.log("📖 Stream reader created successfully");
         let accumulatedContent = "";
         let chunkCount = 0;
         const decoder = new TextDecoder();
+        console.log("📖 Text decoder created");
 
         while (true) {
-          const { done, value } = await reader.read();
+          try {
+            const { done, value } = await reader.read();
 
-          if (done) {
-            console.log("✅ Stream finished. Total chunks:", chunkCount);
-            break;
-          }
+            if (done) {
+              console.log("✅ Stream finished. Total chunks:", chunkCount);
+              break;
+            }
 
-          chunkCount++;
-          const chunk = decoder.decode(value, { stream: true });
-          console.log(
-            `📦 Chunk ${chunkCount}:`,
-            chunk.substring(0, 100) + "..."
-          );
-
-          const contentChunk = parseDataStreamChunk(chunk);
-          console.log(
-            `🔧 Parsed content chunk (${contentChunk.length} chars):`,
-            contentChunk.substring(0, 50) + "..."
-          );
-
-          if (contentChunk) {
-            accumulatedContent += contentChunk;
+            chunkCount++;
             console.log(
-              "📝 Accumulated content length:",
-              accumulatedContent.length
+              `📦 Reading chunk ${chunkCount}, size:`,
+              value?.length || 0,
+              "bytes"
             );
-            // Clean up and set streaming content
-            const cleanedStreamingContent = cleanupContent(accumulatedContent);
-            setStreamingContent(cleanedStreamingContent);
+
+            const chunk = decoder.decode(value, { stream: true });
+            console.log(
+              `📦 Chunk ${chunkCount} decoded:`,
+              chunk.substring(0, 100) + (chunk.length > 100 ? "..." : "")
+            );
+
+            const contentChunk = parseDataStreamChunk(chunk);
+            console.log(
+              `🔧 Parsed content chunk (${contentChunk.length} chars):`,
+              contentChunk.substring(0, 50) +
+                (contentChunk.length > 50 ? "..." : "")
+            );
+
+            if (contentChunk) {
+              accumulatedContent += contentChunk;
+              console.log(
+                "📝 Accumulated content length:",
+                accumulatedContent.length
+              );
+              // Clean up and set streaming content
+              const cleanedStreamingContent =
+                cleanupContent(accumulatedContent);
+              setStreamingContent(cleanedStreamingContent);
+            }
+          } catch (streamError) {
+            console.error("❌ Error reading stream chunk:", streamError);
+            console.error("❌ Stream error at chunk:", chunkCount);
+            throw streamError;
           }
         }
 
@@ -329,6 +402,9 @@ export default function GeminiComputerPage() {
           posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_SUCCESS, {
             [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
             [EVENT_PROPERTIES.CONTENT_LENGTH]: accumulatedContent.length,
+            [EVENT_PROPERTIES.MODEL_ID]: selectedModel,
+            [EVENT_PROPERTIES.MODEL_NAME]:
+              selectedModelData?.name || selectedModel,
             [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
           });
         } else {
@@ -338,6 +414,9 @@ export default function GeminiComputerPage() {
           posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_WARNING, {
             [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
             [EVENT_PROPERTIES.ISSUE]: WARNING_ISSUES.EMPTY_CONTENT,
+            [EVENT_PROPERTIES.MODEL_ID]: selectedModel,
+            [EVENT_PROPERTIES.MODEL_NAME]:
+              selectedModelData?.name || selectedModel,
             [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
           });
 
@@ -357,6 +436,9 @@ export default function GeminiComputerPage() {
         posthog.capture(ANALYTICS_EVENTS.UI_GENERATION_ERROR, {
           [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
           [EVENT_PROPERTIES.ERROR]: errorMessage,
+          [EVENT_PROPERTIES.MODEL_ID]: selectedModel,
+          [EVENT_PROPERTIES.MODEL_NAME]:
+            selectedModelData?.name || selectedModel,
           [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
           [EVENT_PROPERTIES.ISSUE]: isRateLimit
             ? WARNING_ISSUES.RATE_LIMITED
@@ -375,7 +457,13 @@ export default function GeminiComputerPage() {
         setIsStreaming(false);
       }
     },
-    [currentContent, isStreaming, interactionCount, feedbackShown]
+    [
+      currentContent,
+      isStreaming,
+      interactionCount,
+      feedbackShown,
+      selectedModel,
+    ]
   );
 
   const handleTestSystem = useCallback(async () => {
@@ -398,6 +486,17 @@ export default function GeminiComputerPage() {
     );
     if (feedbackAlreadyShown === "true") {
       setFeedbackShown(true);
+    }
+
+    // Track if a model was loaded from saved preference
+    const savedModel = localStorage.getItem("gemini_computer_selected_model");
+    if (savedModel && savedModel !== AVAILABLE_MODELS[0].id) {
+      const modelData = AVAILABLE_MODELS.find((m) => m.id === savedModel);
+      posthog.capture(ANALYTICS_EVENTS.MODEL_LOADED_FROM_PREFERENCE, {
+        [EVENT_PROPERTIES.MODEL_ID]: savedModel,
+        [EVENT_PROPERTIES.MODEL_NAME]: modelData?.name || savedModel,
+        [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+      });
     }
   }, []);
   // Use streaming content if available, otherwise use current content
@@ -429,10 +528,17 @@ export default function GeminiComputerPage() {
         {/* Window Header - Static */}
         <div className="bg-[#202124] text-white px-5 py-3 rounded-t-lg flex items-center justify-between">
           <h1 className="m-0 text-lg font-medium">{windowTitle}</h1>
-          <div className="flex gap-2">
-            <div className="w-3 h-3 bg-[#34a853] rounded-full"></div>
-            <div className="w-3 h-3 bg-[#fbbc04] rounded-full"></div>
-            <div className="w-3 h-3 bg-[#ea4335] rounded-full"></div>
+          <div className="flex items-center gap-3">
+            <ModelSelector
+              selectedModel={selectedModel}
+              onModelChange={handleModelChange}
+              disabled={isStreaming}
+            />
+            <div className="flex gap-2">
+              <div className="w-3 h-3 bg-[#34a853] rounded-full"></div>
+              <div className="w-3 h-3 bg-[#fbbc04] rounded-full"></div>
+              <div className="w-3 h-3 bg-[#ea4335] rounded-full"></div>
+            </div>
           </div>
         </div>
 

@@ -8,6 +8,7 @@ interface InteractionContext {
   currentContent: string
   interactionId: string
   timestamp: number
+  modelId?: string
 }
 
 // Function to clean up markdown code blocks from generated content
@@ -31,15 +32,18 @@ function cleanupGeneratedContent(content: string): string {
 }
 
 export async function generateNextScreenStream(context: InteractionContext) {
+  const modelId = context.modelId || "gemini-2.5-flash-lite-preview-06-17";
+
   console.log('🎯 generateNextScreenStream called with:', {
     interactionId: context.interactionId,
-    contentLength: context.currentContent?.length || 0
+    contentLength: context.currentContent?.length || 0,
+    modelId
   });
 
   try {
-    console.log('🤖 Calling streamText with Gemini...');
+    console.log(`🤖 Calling streamText with ${modelId}...`);
     const result = await streamText({
-      model: google("gemini-2.5-flash-lite-preview-06-17"),
+      model: google(modelId),
       system: `You are the AI brain behind "Gemini Computer", a non-deterministic operating system. Your job is to generate the HTML content for the next screen based on the current content and the user's interaction.
 
 IMPORTANT: You ONLY generate the content that goes INSIDE the window frame. Do NOT generate the full HTML document, window header, or outer structure. Just generate the inner content area.
@@ -117,7 +121,9 @@ Focus on creating intuitive interfaces that feel like a real operating system.In
         metadata: {
           interactionId: context.interactionId,
           timestamp: context.timestamp,
-          contentLength: context.currentContent?.length || 0
+          contentLength: context.currentContent?.length || 0,
+          modelId,
+          modelName: modelId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
         }
       }),
     });
@@ -232,9 +238,11 @@ function getDesktopContent(): string {
 
 // Keep the old function for backward compatibility
 export async function generateNextScreen(context: InteractionContext) {
+  const modelId = context.modelId || "gemini-2.5-flash-lite-preview-06-17";
+
   try {
     const result = await streamText({
-      model: google("gemini-2.5-flash-lite-preview-06-17"),
+      model: google(modelId),
       system: `You are the AI brain behind "Gemini Computer", a non-deterministic operating system. Your job is to generate the HTML content for the next screen based on the current content and the user's interaction.
 
 IMPORTANT: You ONLY generate the content that goes INSIDE the window frame. Do NOT generate the full HTML document, window header, or outer structure. Just generate the inner content area.
@@ -258,6 +266,8 @@ Generate the content HTML for the next screen.Remember to be non - deterministic
           interactionId: context.interactionId,
           timestamp: context.timestamp,
           contentLength: context.currentContent?.length || 0,
+          modelId,
+          modelName: modelId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
           function: "generateNextScreen"
         }
       }),

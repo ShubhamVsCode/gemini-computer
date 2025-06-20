@@ -5,12 +5,13 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { currentContent, interactionId, timestamp } = body;
+        const { currentContent, interactionId, timestamp, modelId } = body;
 
         console.log('📝 Request data:', {
             interactionId,
             contentLength: currentContent?.length || 0,
-            timestamp: new Date(timestamp).toISOString()
+            timestamp: new Date(timestamp).toISOString(),
+            modelId: modelId || 'gemini-2.5-flash-lite-preview-06-17'
         });
 
         // Validate input
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
             currentContent,
             interactionId,
             timestamp,
+            modelId,
         });
 
         console.log('✅ Generated response:', response);
