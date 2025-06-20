@@ -10,6 +10,11 @@ export const ANALYTICS_EVENTS = {
     UI_GENERATION_WARNING: "UI Generation Warning",
     UI_GENERATION_ERROR: "UI Generation Error",
 
+    // Feedback Events
+    FEEDBACK_MODAL_SHOWN: "Feedback Modal Shown",
+    FEEDBACK_SUBMITTED: "Feedback Submitted",
+    FEEDBACK_DISMISSED: "Feedback Dismissed",
+
     // App-specific Events (for future use)
     APP_OPENED: "App Opened",
     DESKTOP_RETURNED: "Desktop Returned",
@@ -26,6 +31,12 @@ export const EVENT_PROPERTIES = {
     ISSUE: "issue",
     APP_NAME: "appName",
     SUCCESS: "success",
+    // Feedback properties
+    FEEDBACK_REASON: "reason",
+    FEEDBACK_RATING: "rating",
+    FEEDBACK_COMMENTS: "comments",
+    FEEDBACK_IMPROVEMENTS: "improvements",
+    INTERACTION_COUNT: "interactionCount",
 } as const;
 
 // Issue types for warnings

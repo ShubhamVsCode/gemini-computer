@@ -4,6 +4,7 @@ import posthog from "posthog-js";
 import { useState, useCallback, useEffect } from "react";
 import { GeminiComputerRenderer } from "@/components/dynamic-ui-renderer";
 import { RateLimitBanner } from "@/components/rate-limit-banner";
+import { FeedbackModal, FeedbackData } from "@/components/feedback-modal";
 import {
   ANALYTICS_EVENTS,
   EVENT_PROPERTIES,
@@ -102,6 +103,9 @@ export default function GeminiComputerPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
   const [showRateLimitBanner, setShowRateLimitBanner] = useState(false);
+  const [interactionCount, setInteractionCount] = useState(0);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackShown, setFeedbackShown] = useState(false);
 
   const [windowTitle, setWindowTitle] = useState("Gemini Computer");
 
@@ -153,6 +157,40 @@ export default function GeminiComputerPage() {
     setShowRateLimitBanner(false);
   }, []);
 
+  // Feedback modal handlers
+  const handleFeedbackSubmit = useCallback(
+    async (feedback: FeedbackData) => {
+      // Track feedback submission
+      posthog.capture(ANALYTICS_EVENTS.FEEDBACK_SUBMITTED, {
+        [EVENT_PROPERTIES.FEEDBACK_REASON]: feedback.reason,
+        [EVENT_PROPERTIES.FEEDBACK_RATING]: feedback.rating,
+        [EVENT_PROPERTIES.FEEDBACK_COMMENTS]: feedback.comments,
+        [EVENT_PROPERTIES.FEEDBACK_IMPROVEMENTS]: feedback.improvements,
+        [EVENT_PROPERTIES.INTERACTION_COUNT]: interactionCount,
+        [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+      });
+
+      // Mark feedback as shown for this session
+      localStorage.setItem("gemini_computer_feedback_shown", "true");
+      setFeedbackShown(true);
+      setShowFeedbackModal(false);
+    },
+    [interactionCount]
+  );
+
+  const handleFeedbackClose = useCallback(() => {
+    // Track feedback dismissal
+    posthog.capture(ANALYTICS_EVENTS.FEEDBACK_DISMISSED, {
+      [EVENT_PROPERTIES.INTERACTION_COUNT]: interactionCount,
+      [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+    });
+
+    // Mark feedback as shown for this session (even if dismissed)
+    localStorage.setItem("gemini_computer_feedback_shown", "true");
+    setFeedbackShown(true);
+    setShowFeedbackModal(false);
+  }, [interactionCount]);
+
   const handleInteraction = useCallback(
     async (interactionId: string) => {
       if (isStreaming) return;
@@ -161,11 +199,30 @@ export default function GeminiComputerPage() {
       setIsStreaming(true);
       setStreamingContent(""); // Reset streaming content
 
+      // Increment interaction count
+      const newCount = interactionCount + 1;
+      setInteractionCount(newCount);
+
       // Track interaction start with PostHog
       posthog.capture(ANALYTICS_EVENTS.UI_INTERACTION_STARTED, {
         [EVENT_PROPERTIES.INTERACTION_ID]: interactionId,
+        [EVENT_PROPERTIES.INTERACTION_COUNT]: newCount,
         [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
       });
+
+      // Show feedback modal after 3-4 interactions (randomly between them)
+      if (!feedbackShown && newCount >= 3 && newCount <= 4) {
+        const shouldShow = Math.random() > 0.5; // 50% chance on 3rd interaction, 100% on 4th
+        if (shouldShow || newCount === 4) {
+          setTimeout(() => {
+            setShowFeedbackModal(true);
+            posthog.capture(ANALYTICS_EVENTS.FEEDBACK_MODAL_SHOWN, {
+              [EVENT_PROPERTIES.INTERACTION_COUNT]: newCount,
+              [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+            });
+          }, 1500); // Show after a short delay
+        }
+      }
 
       // Update window title based on interaction
       if (
@@ -318,7 +375,7 @@ export default function GeminiComputerPage() {
         setIsStreaming(false);
       }
     },
-    [currentContent, isStreaming]
+    [currentContent, isStreaming, interactionCount, feedbackShown]
   );
 
   const handleTestSystem = useCallback(async () => {
@@ -334,6 +391,14 @@ export default function GeminiComputerPage() {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
       defaults: "2025-05-24",
     });
+
+    // Check if feedback was already shown in this session
+    const feedbackAlreadyShown = localStorage.getItem(
+      "gemini_computer_feedback_shown"
+    );
+    if (feedbackAlreadyShown === "true") {
+      setFeedbackShown(true);
+    }
   }, []);
   // Use streaming content if available, otherwise use current content
   const displayContent = streamingContent || currentContent;
@@ -344,6 +409,12 @@ export default function GeminiComputerPage() {
         isVisible={showRateLimitBanner}
         onClose={handleCloseBanner}
         onTest={handleTestSystem}
+      />
+
+      <FeedbackModal
+        isVisible={showFeedbackModal}
+        onClose={handleFeedbackClose}
+        onSubmit={handleFeedbackSubmit}
       />
 
       {isStreaming && (
