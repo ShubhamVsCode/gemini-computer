@@ -434,10 +434,10 @@ export default function GeminiComputerPage() {
         [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
       });
 
-      // Show feedback modal after 3-4 interactions (randomly between them)
-      if (!feedbackShown && newCount >= 3 && newCount <= 4) {
-        const shouldShow = Math.random() > 0.5; // 50% chance on 3rd interaction, 100% on 4th
-        if (shouldShow || newCount === 4) {
+      // Show feedback modal after 6-7 interactions (randomly between them)
+      if (!feedbackShown && newCount >= 6 && newCount <= 7) {
+        const shouldShow = Math.random() > 0.5; // 50% chance on 6th interaction, 100% on 7th
+        if (shouldShow || newCount === 7) {
           setTimeout(() => {
             setShowFeedbackModal(true);
             posthog.capture(ANALYTICS_EVENTS.FEEDBACK_MODAL_SHOWN, {
