@@ -330,6 +330,13 @@ export default function GeminiComputerPage() {
   // Usage limit handlers
   const handleEmailSubmit = useCallback(
     async (email: string) => {
+      // Identify the user in PostHog with their email
+      posthog.identify(email, {
+        email: email,
+        upgraded_at: new Date().toISOString(),
+        upgrade_usage_count: usageCount,
+      });
+
       // Track email submission
       posthog.capture(ANALYTICS_EVENTS.EMAIL_SUBMITTED_FOR_UPGRADE, {
         [EVENT_PROPERTIES.EMAIL_PROVIDED]: email,
@@ -347,6 +354,16 @@ export default function GeminiComputerPage() {
     },
     [usageCount]
   );
+
+  const handleTestSystem = useCallback(async () => {
+    // Close the banner and try a simple interaction
+    setShowRateLimitBanner(false);
+    // Reset the session state so banner can show again if needed
+    setRateLimitBannerShown(false);
+
+    // Test with the desktop interaction
+    await handleInteraction("open_desktop");
+  }, [handleInteraction]);
 
   const handleUsageLimitModalClose = useCallback(() => {
     // Track modal dismissal
@@ -673,6 +690,16 @@ export default function GeminiComputerPage() {
       defaults: "2025-05-24",
     });
 
+    // Identify returning users who have already provided their email
+    const userEmail = localStorage.getItem("gemini_computer_user_email");
+    if (userEmail && isUpgraded) {
+      posthog.identify(userEmail, {
+        email: userEmail,
+        is_returning_user: true,
+        current_usage_count: usageCount,
+      });
+    }
+
     // Check if feedback was already shown in this session
     const feedbackAlreadyShown = localStorage.getItem(
       "gemini_computer_feedback_shown"
@@ -691,7 +718,7 @@ export default function GeminiComputerPage() {
         [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
       });
     }
-  }, []);
+  }, [isUpgraded, usageCount]);
   // Use streaming content if available, otherwise use current content
   const displayContent = streamingContent || currentContent;
 
@@ -700,7 +727,7 @@ export default function GeminiComputerPage() {
       <RateLimitBanner
         isVisible={showRateLimitBanner}
         onClose={handleCloseBanner}
-        // onTest={handleTestSystem}
+        onTest={handleTestSystem}
         onChangeModel={handleChangeModel}
       />
 
