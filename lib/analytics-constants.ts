@@ -24,6 +24,9 @@ export const ANALYTICS_EVENTS = {
     DESKTOP_RETURNED: "Desktop Returned",
     SETTINGS_ACCESSED: "Settings Accessed",
     DOCUMENT_FOLDER_OPENED: "Document Folder Opened",
+
+    // Footer Events
+    FOOTER_LINK_CLICKED: "Footer Link Clicked",
 } as const;
 
 // Event property constants for consistency
@@ -45,6 +48,9 @@ export const EVENT_PROPERTIES = {
     MODEL_ID: "modelId",
     MODEL_NAME: "modelName",
     PREVIOUS_MODEL: "previousModel",
+    // Footer properties
+    LINK_TYPE: "linkType",
+    LINK_DESTINATION: "linkDestination",
 } as const;
 
 // Issue types for warnings

@@ -229,6 +229,19 @@ export default function GeminiComputerPage() {
     setSelectedModel(AVAILABLE_MODELS[0].id);
   }, []);
 
+  // Footer link analytics handlers
+  const handleFooterLinkClick = useCallback(
+    (linkType: string, linkDestination: string) => {
+      posthog.capture(ANALYTICS_EVENTS.FOOTER_LINK_CLICKED, {
+        [EVENT_PROPERTIES.LINK_TYPE]: linkType,
+        [EVENT_PROPERTIES.LINK_DESTINATION]: linkDestination,
+        [EVENT_PROPERTIES.INTERACTION_COUNT]: interactionCount,
+        [EVENT_PROPERTIES.TIMESTAMP]: Date.now(),
+      });
+    },
+    [interactionCount]
+  );
+
   const handleInteraction = useCallback(
     async (interactionId: string) => {
       if (isStreaming) return;
@@ -561,6 +574,9 @@ export default function GeminiComputerPage() {
               href="https://coff.ee/shubhamvsc5"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                handleFooterLinkClick("donation", "https://coff.ee/shubhamvsc5")
+              }
               className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:transform hover:-translate-y-0.5 hover:shadow-lg shadow-orange-400/30"
             >
               ☕ Buy me a coffee
@@ -573,6 +589,12 @@ export default function GeminiComputerPage() {
               href="https://github.com/shubhamvscode"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                handleFooterLinkClick(
+                  "social",
+                  "https://github.com/shubhamvscode"
+                )
+              }
               className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
               aria-label="GitHub"
             >
@@ -585,6 +607,12 @@ export default function GeminiComputerPage() {
               href="https://twitter.com/shubhamvscode"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                handleFooterLinkClick(
+                  "social",
+                  "https://twitter.com/shubhamvscode"
+                )
+              }
               className="text-gray-600 hover:text-blue-500 transition-colors duration-200"
               aria-label="Twitter"
             >
